@@ -61,6 +61,7 @@ src/
   data/site.ts          # TODO el contenido: negocio, servicios, pasos, FAQ, confianza
   config/flags.ts       # SHOW_PLACEHOLDERS
   styles/global.css     # tokens (único lugar con hex)
+  lib/path.ts           # links internos: siempre path("/..."), nunca "/..." suelto
   layouts/Base.astro    # <head>, SEO, JSON-LD, header, footer, barra móvil
   components/ui/        # primitivas: Button, Icon, PlaceholderTag
   components/site/      # compartidos entre páginas: Header, Footer, Section, ServiceGrid, Steps, CtaBand

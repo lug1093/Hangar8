@@ -1,4 +1,5 @@
 ---
+import { path } from '../../lib/path';
 import { business, nav } from '../../data/site';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
@@ -24,7 +25,7 @@ const current = Astro.url.pathname;
 
 <header class="sticky top-0 z-40 border-b border-ink-line bg-ink text-on-ink">
   <div class="mx-auto flex h-[var(--header-h)] max-w-[1200px] items-center justify-between gap-4 px-4 md:px-6">
-    <a href="/" class="-m-1 p-1" aria-label="Hangar 8, inicio">
+    <a href={path('/')} class="-m-1 p-1" aria-label="Hangar 8, inicio">
       <Logo tone="ink" />
     </a>
 
@@ -34,7 +35,7 @@ const current = Astro.url.pathname;
           nav.map((item) => (
             <li>
               <a
-                href={item.href}
+                href={path(item.href)}
                 class="inline-flex min-h-[44px] items-center rounded-[var(--radius-btn)] px-3 text-[15px] text-on-ink-2 transition-colors duration-[120ms] hover:text-on-ink"
               >
                 {item.label}
@@ -89,7 +90,7 @@ const current = Astro.url.pathname;
       {
         nav.map((item) => (
           <li>
-            <a href={item.href} class="flex min-h-[52px] items-center rounded-[var(--radius-btn)] px-3 text-lg hover:bg-ink-2" data-menu-link>
+            <a href={path(item.href)} class="flex min-h-[52px] items-center rounded-[var(--radius-btn)] px-3 text-lg hover:bg-ink-2" data-menu-link>
               {item.label}
             </a>
           </li>

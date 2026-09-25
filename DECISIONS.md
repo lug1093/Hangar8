@@ -87,3 +87,13 @@ necesita otro tratamiento. Sin botón de tema: nadie lo busca en un sitio de tal
 chequeo encontró el servidor viejo y habría medido contra un build anterior. El
 script sirve `dist/` con un servidor propio en un puerto libre y lo baja al
 terminar (playbook, sección 12, regla 4).
+
+## D-10. Vista previa en GitHub Pages
+
+Desde el entorno de desarrollo no se llega a Vercel, y hacía falta un link para ver
+el sitio en el teléfono. El repo es público, así que `.github/workflows/preview.yml`
+publica en `https://lug1093.github.io/Hangar8/`. Para eso el sitio acepta una base
+(`ASTRO_BASE`) y todo link interno pasa por `src/lib/path.ts`. La vista previa lleva
+`noindex` (`PUBLIC_PREVIEW`): tiene placeholders y no tiene que competir en Google
+con el dominio real. **Al pasar a Vercel**, borrar el workflow o dejarlo solo para
+ramas.

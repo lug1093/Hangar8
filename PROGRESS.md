@@ -37,3 +37,4 @@ Todo esto está en `src/data/site.ts`:
 - En este entorno Google está bloqueado: el mapa se ve vacío en las capturas, con
   la dirección como respaldo. En un navegador real carga.
 - No usar `astro preview` para medir (D-09).
+- Vista previa: https://lug1093.github.io/Hangar8/ (D-10). Todo link interno va con `path()` de `src/lib/path.ts`.
