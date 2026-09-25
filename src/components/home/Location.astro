@@ -7,7 +7,7 @@ import Icon from '../ui/Icon.astro';
 ---
 
 <Section id="contacto" tone="surface" labelledby="contacto-title">
-  <div class="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
+  <div class="grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:gap-12">
     <div>
       <SectionHeading id="contacto-title" eyebrow="Contacto" title="Visitanos en Ituzaingó" />
       <dl class="divide-y divide-line border-y border-line">
@@ -27,18 +27,23 @@ import Icon from '../ui/Icon.astro';
       <p class="mt-6 text-text-2">
         Atendemos {areas.slice(0, -1).join(', ')} y {areas.at(-1)}, en la zona oeste del Gran Buenos Aires.
       </p>
-      <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-        <Button href={business.mapsHref} external variant="secondary">
-          <Icon name="map-pin" size={18} />Cómo llegar
-        </Button>
+      <Button href={business.mapsHref} external variant="secondary" class="mt-6">
+        <Icon name="map-pin" size={18} />Cómo llegar
+      </Button>
+      <p class="mt-4 text-text-2">
+        Mirá más trabajos en{' '}
         {
-          business.social.map((s) => (
-            <a href={s.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[44px] items-center text-[15px] font-medium underline underline-offset-4">
-              {`${s.label} ${s.handle}`}
-            </a>
+          business.social.map((s, i) => (
+            <>
+              {i > 0 && ' y '}
+              <a href={s.href} target="_blank" rel="noopener noreferrer" class="font-medium text-text underline underline-offset-4">
+                {`${s.label} ${s.handle}`}
+              </a>
+            </>
           ))
         }
-      </div>
+        .
+      </p>
     </div>
     <!-- Si el mapa no carga (bloqueador, sin red), queda la dirección debajo. -->
     <div class="relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-bg">

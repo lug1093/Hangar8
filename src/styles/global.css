@@ -127,4 +127,6 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.01em;
   line-height: 0.95;
+  /* Reparte las líneas: evita la palabra sola en la última ("LISTO"). */
+  text-wrap: balance;
 }

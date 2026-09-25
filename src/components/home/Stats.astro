@@ -11,13 +11,20 @@ const show = visible.length >= 2;
 {
   show && (
     <section aria-label="Hangar 8 en números" class="border-b border-line bg-bg">
-      <dl class:list={['mx-auto grid max-w-[1200px] grid-cols-2 gap-px bg-line', visible.length >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3']}>
+      <dl data-align-group="stats" class:list={['mx-auto grid max-w-[1200px] grid-cols-2 gap-px bg-line', visible.length >= 4 ? 'md:grid-cols-4' : 'md:grid-cols-3']}>
         {visible.map((s, i) => (
-          <div class="flex flex-col-reverse gap-1 bg-bg px-4 py-6 md:px-6 md:py-8">
-            <dt class="text-[15px] text-text-2">
-              {s.label} {s.placeholder && <PlaceholderTag />}
+          <div class="flex flex-col bg-bg px-4 py-6 md:px-6 md:py-8">
+            <dt class="mt-1 text-[15px] text-text-2">
+              {s.label}
+              {s.placeholder && (
+                <span class="mt-2 block">
+                  <PlaceholderTag />
+                </span>
+              )}
             </dt>
-            <dd class="display text-[44px] text-text md:text-[56px]">{s.value}</dd>
+            {/* El número va arriba con order-first: así todos arrancan a la misma
+                altura aunque la etiqueta de abajo ocupe una o dos líneas. */}
+            <dd data-align="top" class="display order-first text-[44px] text-text md:text-[56px]">{s.value}</dd>
           </div>
         ))}
       </dl>

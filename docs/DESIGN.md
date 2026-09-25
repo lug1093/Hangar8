@@ -61,3 +61,28 @@ Además, axe (WCAG 2.2 AA) corre sobre cada página, en claro y oscuro, a 390 y
 - Grillas (servicios, pasos, reseñas, stats) como un solo contenedor con celdas
   divididas por líneas de 1px, no tarjetas flotantes.
 - Radios: 12px tarjetas, 10px botones. Sin sombras.
+
+## Ritmo vertical
+
+Un solo juego de espacios, en la escala de 4px:
+
+| Qué | Celular | Desktop |
+|---|---|---|
+| Sección (`Section`) | 48px arriba y abajo | 64px desde `lg` |
+| Hero | 40px | 64px arriba, 48px abajo |
+| Título de sección a contenido | 24px | 32px |
+| Título al lado del contenido (dos columnas) | sin margen (`flush`), el espacio lo da el `gap` | |
+| Columnas | `gap` 32px | 48px |
+
+## Alineación
+
+- En cada grilla, los números, títulos y links de la misma fila van a la misma
+  altura aunque el texto de al lado ocupe una o dos líneas. En las stats el número
+  va primero con `order-first` (antes estaba abajo en el orden del documento con
+  `flex-col-reverse`, y se desfasaba según el largo de la etiqueta).
+- Las grillas marcadas con `data-align-group` se verifican en `npm run check`:
+  las marcas `data-align="top"` o `"bottom"` de una misma fila no pueden diferir en
+  más de 1px, en 320, 390, 768, 1024 y 1280px.
+- Los títulos grandes usan `text-wrap: balance` para no dejar una palabra sola.
+- Servicios en 4 columnas recién desde 1280px: en 1024 "Mecánica integral" ocupaba
+  dos líneas y desfasaba las descripciones.

@@ -15,12 +15,12 @@ const trust = [
     viewBox="0 0 48 40"
     aria-hidden="true"
     focusable="false"
-    class="pointer-events-none absolute -right-24 top-1/2 hidden w-[640px] -translate-y-1/2 opacity-[0.14] lg:block"
+    class="pointer-events-none absolute -right-40 top-1/2 hidden w-[600px] -translate-y-1/2 opacity-[0.14] xl:block"
   >
     <path d="M12 2h24l10 18-10 18H12L2 20Z" fill="none" stroke="var(--ink-accent)" stroke-width="1.2" stroke-linejoin="round" />
   </svg>
 
-  <div class="relative mx-auto max-w-[1200px] px-4 pb-12 pt-14 md:px-6 md:pb-16 md:pt-24">
+  <div class="relative mx-auto max-w-[1200px] px-4 pb-10 pt-10 md:px-6 md:pb-12 md:pt-16">
     <p class="mb-5 text-sm font-medium uppercase tracking-[0.14em] text-ink-accent">
       Taller integral en {business.address.city}
     </p>
@@ -40,7 +40,7 @@ const trust = [
       </Button>
     </div>
 
-    <ul class="mt-12 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-ink-line bg-ink-line md:mt-16 md:grid-cols-3">
+    <ul data-align-group="confianza" class="mt-10 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-ink-line bg-ink-line md:mt-12 md:grid-cols-3">
       {
         trust.map((t) => (
           <li class="flex items-center gap-3 bg-ink-2 px-5 py-4 text-[15px]">

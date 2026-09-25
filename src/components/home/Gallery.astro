@@ -16,15 +16,15 @@ const instagram = business.social.find((s) => s.label === 'Instagram');
       <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <SectionHeading id="trabajos-title" eyebrow="Trabajos" title="Así quedan los autos" />
         {instagram && (
-          <Button href={instagram.href} external variant="secondary" class="mb-8 self-start md:self-auto">
+          <Button href={instagram.href} external variant="secondary" class="mb-6 self-start md:mb-8 md:self-auto">
             Más trabajos en Instagram <Icon name="arrow-right" size={16} />
           </Button>
         )}
       </div>
-      <ul class="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3">
+      <ul data-align-group="galería" class="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3">
         {visible.map((g) => (
           <li>
-            <figure class="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+            <figure data-align="bottom" class="flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
               {g.src ? (
                 <img src={g.src} alt={g.alt} width="800" height="600" loading="lazy" decoding="async" class="block aspect-[4/3] w-full object-cover" />
               ) : (
@@ -33,7 +33,7 @@ const instagram = business.social.find((s) => s.label === 'Instagram');
                   <span class="text-xs font-medium uppercase tracking-wider">Foto pendiente</span>
                 </div>
               )}
-              <figcaption class="px-3 py-2.5 text-sm">{g.caption}</figcaption>
+              <figcaption class="flex-1 px-3 py-2.5 text-sm">{g.caption}</figcaption>
             </figure>
           </li>
         ))}

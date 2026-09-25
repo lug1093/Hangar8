@@ -17,10 +17,11 @@ const points = [
 ---
 
 <Section id="seguros" tone="ink" labelledby="seguros-title">
-  <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+  <div class="grid items-start gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
     <SectionHeading
       id="seguros-title"
       tone="ink"
+      flush
       eyebrow="Seguros"
       title="¿Tuviste un choque? Lo resolvemos con tu seguro"
       lead="Escribinos con la patente, la compañía y el número de siniestro si ya lo tenés. Nos ocupamos del resto del trámite con la aseguradora."
@@ -49,7 +50,7 @@ const points = [
 
   {
     insurers.length > 0 && (
-      <ul aria-label="Algunas de las compañías con las que trabajamos" class="mt-10 flex flex-wrap gap-2">
+      <ul aria-label="Algunas de las compañías con las que trabajamos" class="mt-8 flex flex-wrap gap-2">
         {insurers.map((name) => (
           <li class="rounded-[var(--radius-btn)] border border-ink-line px-4 py-2 text-[15px]">{name}</li>
         ))}
@@ -58,7 +59,7 @@ const points = [
   }
   {
     showInsurerSlots && (
-      <div class="mt-10">
+      <div class="mt-8">
         <p class="mb-3 flex items-center gap-2 text-sm text-on-ink-2">
           Logos de las aseguradoras <PlaceholderTag tone="ink" />
         </p>

@@ -121,7 +121,7 @@ export const steps = [
     body: 'Te pasamos el presupuesto. Si va por el seguro, coordinamos con tu compañía.',
   },
   {
-    title: 'Lo retiramos y te lo devolvemos',
+    title: 'Retiro y entrega',
     body: 'Pasamos a buscar el auto y te lo llevamos listo. O lo traés vos al taller.',
   },
 ];

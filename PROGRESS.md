@@ -10,6 +10,7 @@
 - [x] Placeholders marcados y apagables (`src/config/flags.ts`)
 - [x] `npm run check`: axe WCAG 2.2 AA, desborde a 320/390/768/1280, áreas táctiles, claro y oscuro, menú
 - [x] Contrastes medidos en `docs/DESIGN.md`
+- [x] Revisión de alineación y espacios: stats alineadas, ritmo vertical único, chequeo automático de alineación (ver `docs/DESIGN.md`)
 
 ## Datos pendientes del taller (fase 2)
 

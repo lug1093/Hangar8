@@ -6,8 +6,8 @@ import Logo from './Logo.astro';
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-ink pb-28 text-on-ink-2 sm:pb-0">
-  <div class="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 md:grid-cols-[1.4fr_1fr_1fr] md:px-6">
+<footer class="border-t border-ink-line bg-ink pb-28 text-on-ink-2 sm:pb-0">
+  <div class="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 md:py-12 md:grid-cols-[1.4fr_1fr_1fr] md:px-6">
     <div class="space-y-4">
       <Logo tone="ink" class="text-on-ink" />
       <p class="max-w-[40ch] text-sm">{business.description}</p>

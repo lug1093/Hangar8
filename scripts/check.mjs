@@ -10,7 +10,7 @@ import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
 
 const pages = ['/', '/servicios/chapa-y-pintura', '/servicios/sacabollo', '/404'];
-const widths = [320, 390, 768, 1280];
+const widths = [320, 390, 768, 1024, 1280];
 const schemes = ['light', 'dark'];
 const executablePath = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
@@ -72,6 +72,33 @@ try {
             .map((el) => `"${el.textContent.trim().slice(0, 30)}" ${Math.round(el.getBoundingClientRect().height)}px`),
         );
         if (small.length) problems.push(`${tag} áreas < 24px: ${small.join('; ')}`);
+
+        // Alineación: en cada grilla marcada con data-align-group, las celdas de una
+        // misma fila tienen que tener sus marcas data-align="top|bottom" a la misma altura.
+        const misaligned = await page.evaluate(() => {
+          const out = [];
+          for (const group of document.querySelectorAll('[data-align-group]')) {
+            const rows = new Map();
+            for (const cell of group.children) {
+              const r = cell.getBoundingClientRect();
+              if (!r.width) continue;
+              const key = Math.round(r.top);
+              if (!rows.has(key)) rows.set(key, []);
+              rows.get(key).push(cell);
+            }
+            for (const cells of rows.values()) {
+              if (cells.length < 2) continue;
+              for (const mode of ['top', 'bottom']) {
+                const marks = cells.map((c) => c.querySelector(`[data-align="${mode}"]`)).filter(Boolean);
+                if (marks.length < 2) continue;
+                const ys = marks.map((m) => m.getBoundingClientRect()[mode]);
+                if (Math.max(...ys) - Math.min(...ys) > 1) out.push(`${group.dataset.alignGroup} (${mode}, ${Math.round(Math.max(...ys) - Math.min(...ys))}px)`);
+              }
+            }
+          }
+          return [...new Set(out)];
+        });
+        if (misaligned.length) problems.push(`${tag} desalineado: ${misaligned.join(', ')}`);
 
         if (width === 390 || width === 1280) {
           const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).exclude('iframe').analyze();

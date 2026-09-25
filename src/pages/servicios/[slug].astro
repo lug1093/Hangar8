@@ -48,8 +48,8 @@ const schema = [
   schema={schema}
 >
   <section aria-labelledby="servicio-title" class="bg-ink text-on-ink">
-    <div class="mx-auto max-w-[1200px] px-4 pb-12 pt-8 md:px-6 md:pb-16 md:pt-10">
-      <nav aria-label="Ruta" class="mb-8 text-sm text-on-ink-2">
+    <div class="mx-auto max-w-[1200px] px-4 pb-10 pt-6 md:px-6 md:pb-12 md:pt-8">
+      <nav aria-label="Ruta" class="mb-6 text-sm text-on-ink-2">
         <ol class="flex flex-wrap items-center gap-1.5">
           <li><a href={path('/')} class="inline-flex min-h-[32px] items-center underline-offset-4 hover:underline">Inicio</a></li>
           <li aria-hidden="true">/</li>
@@ -73,8 +73,8 @@ const schema = [
   </section>
 
   <Section labelledby="incluye-title">
-    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-      <SectionHeading id="incluye-title" eyebrow="Qué incluye" title={`${service.name}: qué hacemos`} />
+    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-12">
+      <SectionHeading flush id="incluye-title" eyebrow="Qué incluye" title={`${service.name}: qué hacemos`} />
       <ul class="divide-y divide-line border-y border-line">
         {
           service.includes.map((item) => (
