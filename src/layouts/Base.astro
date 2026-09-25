@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import { areas, business } from '../data/site';
+import Footer from '../components/site/Footer.astro';
+import Header from '../components/site/Header.astro';
+import MobileBar from '../components/site/MobileBar.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  whatsappText?: string;
+  /** Datos estructurados propios de la página (FAQPage, Service, BreadcrumbList). */
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description, whatsappText, schema = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// Datos estructurados de negocio local: es lo que Google usa para el panel del mapa.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoBodyShop',
+  '@id': new URL('/#taller', Astro.site).toString(),
+  name: business.name,
+  description: business.description,
+  telephone: business.phoneHref.replace('tel:', ''),
+  url: Astro.site?.toString(),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: business.address.street,
+    addressLocality: business.address.city,
+    addressRegion: business.address.region,
+    addressCountry: business.address.country,
+  },
+  openingHours: business.hours.schema,
+  hasMap: business.mapsHref,
+  sameAs: business.social.map((s) => s.href),
+  areaServed: areas.map((name) => ({ '@type': 'City', name })),
+  priceRange: '$$',
+};
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0e0f11" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {schema.map((item) => <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...item })} />)}
+  </head>
+  <body>
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-[var(--radius-btn)] focus:bg-bg focus:px-4 focus:py-3 focus:text-text"
+    >
+      Ir al contenido
+    </a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar whatsappText={whatsappText} />
+  </body>
+</html>

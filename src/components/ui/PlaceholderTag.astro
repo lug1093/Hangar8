@@ -1,0 +1,16 @@
+---
+// Marca visible de dato a confirmar. Si alguien la ve publicada, es un pendiente.
+interface Props {
+  tone?: 'default' | 'ink';
+}
+const { tone = 'default' } = Astro.props;
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-full border border-dashed px-2 py-0.5 text-xs font-medium uppercase tracking-wider',
+    tone === 'ink' ? 'border-on-ink-2 text-on-ink-2' : 'border-edge text-text-2',
+  ]}
+>
+  Ejemplo
+</span>

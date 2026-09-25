@@ -1,0 +1,43 @@
+---
+import { SHOW_PLACEHOLDERS } from '../../config/flags';
+import { business, gallery } from '../../data/site';
+import Section from '../site/Section.astro';
+import SectionHeading from '../site/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+const visible = gallery.filter((g) => g.src || SHOW_PLACEHOLDERS);
+const instagram = business.social.find((s) => s.label === 'Instagram');
+---
+
+{
+  visible.length > 0 && (
+    <Section id="trabajos" labelledby="trabajos-title">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <SectionHeading id="trabajos-title" eyebrow="Trabajos" title="Así quedan los autos" />
+        {instagram && (
+          <Button href={instagram.href} external variant="secondary" class="mb-8 self-start md:self-auto">
+            Más trabajos en Instagram <Icon name="arrow-right" size={16} />
+          </Button>
+        )}
+      </div>
+      <ul class="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3">
+        {visible.map((g) => (
+          <li>
+            <figure class="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+              {g.src ? (
+                <img src={g.src} alt={g.alt} width="800" height="600" loading="lazy" decoding="async" class="block aspect-[4/3] w-full object-cover" />
+              ) : (
+                <div class="flex aspect-[4/3] flex-col items-center justify-center gap-2 border-b border-dashed border-edge text-text-2">
+                  <Icon name="camera" size={28} />
+                  <span class="text-xs font-medium uppercase tracking-wider">Foto pendiente</span>
+                </div>
+              )}
+              <figcaption class="px-3 py-2.5 text-sm">{g.caption}</figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}

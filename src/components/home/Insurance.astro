@@ -1,0 +1,73 @@
+---
+import { SHOW_PLACEHOLDERS } from '../../config/flags';
+import { business, insurers } from '../../data/site';
+import Section from '../site/Section.astro';
+import SectionHeading from '../site/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import PlaceholderTag from '../ui/PlaceholderTag.astro';
+
+const showInsurerSlots = insurers.length === 0 && SHOW_PLACEHOLDERS;
+
+const points = [
+  'Trabajamos con todas las compañías de seguro',
+  'Coordinamos con tu compañía por vos',
+  'Te avisamos cuando el auto está listo',
+];
+---
+
+<Section id="seguros" tone="ink" labelledby="seguros-title">
+  <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+    <SectionHeading
+      id="seguros-title"
+      tone="ink"
+      eyebrow="Seguros"
+      title="¿Tuviste un choque? Lo resolvemos con tu seguro"
+      lead="Escribinos con la patente, la compañía y el número de siniestro si ya lo tenés. Nos ocupamos del resto del trámite con la aseguradora."
+    />
+    <div class="rounded-[var(--radius-card)] border border-ink-line bg-ink-2 p-6 md:p-8">
+      <ul class="space-y-4">
+        {
+          points.map((p) => (
+            <li class="flex gap-3">
+              <Icon name="check" size={22} class="mt-0.5 shrink-0 text-ink-accent" />
+              <span>{p}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <Button
+        href={business.whatsappHref('Hola Hangar 8, tuve un choque y quiero hacer la reparación por el seguro.')}
+        external
+        variant="secondary-ink"
+        class="mt-8 w-full"
+      >
+        <Icon name="message-circle" size={18} />Consultar por mi siniestro
+      </Button>
+    </div>
+  </div>
+
+  {
+    insurers.length > 0 && (
+      <ul aria-label="Algunas de las compañías con las que trabajamos" class="mt-10 flex flex-wrap gap-2">
+        {insurers.map((name) => (
+          <li class="rounded-[var(--radius-btn)] border border-ink-line px-4 py-2 text-[15px]">{name}</li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    showInsurerSlots && (
+      <div class="mt-10">
+        <p class="mb-3 flex items-center gap-2 text-sm text-on-ink-2">
+          Logos de las aseguradoras <PlaceholderTag tone="ink" />
+        </p>
+        <ul class="grid grid-cols-3 gap-2 md:grid-cols-6" aria-hidden="true">
+          {Array.from({ length: 6 }).map(() => (
+            <li class="h-14 rounded-[var(--radius-btn)] border border-dashed border-ink-line" />
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</Section>

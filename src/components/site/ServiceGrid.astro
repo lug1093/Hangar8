@@ -1,0 +1,36 @@
+---
+// Grilla de servicios: un solo contenedor con celdas divididas por líneas finas,
+// no una tarjeta flotante por ítem (playbook, reglas de forma).
+import { services, type Service } from '../../data/site';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  exclude?: string;
+}
+const { exclude } = Astro.props;
+const list: Service[] = services.filter((s) => s.slug !== exclude);
+---
+
+<ul
+  class:list={[
+    'grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2',
+    list.length === 4 && 'lg:grid-cols-4',
+    list.length === 3 && 'lg:grid-cols-3',
+  ]}
+>
+  {
+    list.map((s) => (
+      <li class="bg-bg">
+        <a href={`/servicios/${s.slug}`} class="group flex h-full flex-col gap-3 p-5 transition-colors duration-[120ms] hover:bg-surface md:p-6">
+          <Icon name={s.icon} size={28} class="text-accent" />
+          <h3 class="display text-[28px]">{s.name}</h3>
+          <p class="text-text-2">{s.summary}</p>
+          <span class="mt-auto inline-flex items-center gap-1.5 pt-1 text-[15px] font-medium underline-offset-4 group-hover:underline">
+            Ver servicio
+            <Icon name="arrow-right" size={16} class="transition-transform duration-[120ms] group-hover:translate-x-0.5" />
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

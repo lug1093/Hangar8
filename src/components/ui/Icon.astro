@@ -1,0 +1,55 @@
+---
+// Único punto de entrada a los iconos (lucide). Decorativos por defecto.
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import CalendarCheck from '@lucide/astro/icons/calendar-check';
+import Camera from '@lucide/astro/icons/camera';
+import CarFront from '@lucide/astro/icons/car-front';
+import Check from '@lucide/astro/icons/check';
+import ChevronDown from '@lucide/astro/icons/chevron-down';
+import Clock from '@lucide/astro/icons/clock';
+import FileText from '@lucide/astro/icons/file-text';
+import Hammer from '@lucide/astro/icons/hammer';
+import MapPin from '@lucide/astro/icons/map-pin';
+import Menu from '@lucide/astro/icons/menu';
+import MessageCircle from '@lucide/astro/icons/message-circle';
+import Phone from '@lucide/astro/icons/phone';
+import ShieldCheck from '@lucide/astro/icons/shield-check';
+import SprayCan from '@lucide/astro/icons/spray-can';
+import Truck from '@lucide/astro/icons/truck';
+import Wrench from '@lucide/astro/icons/wrench';
+import X from '@lucide/astro/icons/x';
+
+const icons = {
+  'arrow-right': ArrowRight,
+  'calendar-check': CalendarCheck,
+  camera: Camera,
+  'car-front': CarFront,
+  check: Check,
+  'chevron-down': ChevronDown,
+  clock: Clock,
+  'file-text': FileText,
+  hammer: Hammer,
+  'map-pin': MapPin,
+  menu: Menu,
+  'message-circle': MessageCircle,
+  phone: Phone,
+  'shield-check': ShieldCheck,
+  'spray-can': SprayCan,
+  truck: Truck,
+  wrench: Wrench,
+  x: X,
+};
+
+export type IconName = keyof typeof icons;
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 20, class: className } = Astro.props;
+const Cmp = icons[name];
+---
+
+<Cmp size={size} stroke-width={2} aria-hidden="true" focusable="false" class={className} />

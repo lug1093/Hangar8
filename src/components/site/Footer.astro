@@ -1,0 +1,55 @@
+---
+import { business, services } from '../../data/site';
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-ink pb-28 text-on-ink-2 sm:pb-0">
+  <div class="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 md:grid-cols-[1.4fr_1fr_1fr] md:px-6">
+    <div class="space-y-4">
+      <Logo tone="ink" class="text-on-ink" />
+      <p class="max-w-[40ch] text-sm">{business.description}</p>
+    </div>
+    <div>
+      <h2 class="mb-3 text-sm font-medium text-on-ink">Servicios</h2>
+      <ul class="space-y-1 text-sm">
+        {
+          services.map((s) => (
+            <li>
+              <a href={`/servicios/${s.slug}`} class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">
+                {s.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h2 class="mb-3 text-sm font-medium text-on-ink">Contacto</h2>
+      <ul class="space-y-1 text-sm">
+        <li>
+          <a href={business.mapsHref} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">
+            {business.address.street}, {business.address.city}
+          </a>
+        </li>
+        <li class="flex min-h-[32px] items-center">{business.hours.label}</li>
+        <li>
+          <a href={business.phoneHref} class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">{business.phoneDisplay}</a>
+        </li>
+        {
+          business.social.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">
+                {`${s.label} ${s.handle}`}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-ink-line">
+    <p class="mx-auto max-w-[1200px] px-4 py-5 text-xs md:px-6">© {year} Hangar 8, taller integral. Ituzaingó, Buenos Aires.</p>
+  </div>
+</footer>

@@ -1,0 +1,55 @@
+---
+import Faq from '../components/home/Faq.astro';
+import Gallery from '../components/home/Gallery.astro';
+import Hero from '../components/home/Hero.astro';
+import Insurance from '../components/home/Insurance.astro';
+import Location from '../components/home/Location.astro';
+import Pickup from '../components/home/Pickup.astro';
+import Reviews from '../components/home/Reviews.astro';
+import Stats from '../components/home/Stats.astro';
+import CtaBand from '../components/site/CtaBand.astro';
+import Section from '../components/site/Section.astro';
+import SectionHeading from '../components/site/SectionHeading.astro';
+import ServiceGrid from '../components/site/ServiceGrid.astro';
+import Steps from '../components/site/Steps.astro';
+import { business, faqs } from '../data/site';
+import Base from '../layouts/Base.astro';
+
+const faqSchema = {
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<Base
+  title="Hangar 8 | Chapa y pintura en Ituzaingó · Taller integral"
+  description={business.description}
+  schema={[faqSchema]}
+>
+  <Hero />
+  <Stats />
+
+  <Section id="servicios" labelledby="servicios-title">
+    <SectionHeading
+      id="servicios-title"
+      eyebrow="Servicios"
+      title="Todo lo que tu auto necesita, en un solo taller"
+      lead="Nuestro fuerte es la chapa y la pintura. También sacamos bollos, hacemos reparaciones y mecánica."
+    />
+    <ServiceGrid />
+  </Section>
+
+  <Pickup />
+
+  <Section id="como-trabajamos" labelledby="pasos-title">
+    <SectionHeading id="pasos-title" eyebrow="Cómo trabajamos" title="Tres pasos y tu auto está listo" />
+    <Steps />
+  </Section>
+
+  <Insurance />
+  <Gallery />
+  <Reviews />
+  <Faq />
+  <Location />
+  <CtaBand />
+</Base>

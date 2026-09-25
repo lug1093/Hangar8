@@ -1,0 +1,54 @@
+---
+import { business } from '../../data/site';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+const trust = [
+  { icon: 'shield-check', text: 'Trabajamos con todas las compañías de seguro' },
+  { icon: 'truck', text: 'Retiramos y entregamos a domicilio' },
+  { icon: 'clock', text: business.hours.label },
+] as const;
+---
+
+<section aria-labelledby="hero-title" class="relative overflow-hidden bg-ink text-on-ink">
+  <svg
+    viewBox="0 0 48 40"
+    aria-hidden="true"
+    focusable="false"
+    class="pointer-events-none absolute -right-24 top-1/2 hidden w-[640px] -translate-y-1/2 opacity-[0.14] lg:block"
+  >
+    <path d="M12 2h24l10 18-10 18H12L2 20Z" fill="none" stroke="var(--ink-accent)" stroke-width="1.2" stroke-linejoin="round" />
+  </svg>
+
+  <div class="relative mx-auto max-w-[1200px] px-4 pb-12 pt-14 md:px-6 md:pb-16 md:pt-24">
+    <p class="mb-5 text-sm font-medium uppercase tracking-[0.14em] text-ink-accent">
+      Taller integral en {business.address.city}
+    </p>
+    <h1 id="hero-title" class="display max-w-[18ch] text-[52px] sm:text-[68px] lg:text-[84px]">
+      Chapa y pintura para que tu auto vuelva como antes
+    </h1>
+    <p class="mt-6 max-w-[56ch] text-lg leading-7 text-on-ink-2">
+      Reparamos la carrocería después de un choque, sacamos bollos y nos ocupamos de la mecánica. Mandanos fotos por
+      WhatsApp y te pasamos el presupuesto.
+    </p>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row" data-hero-cta>
+      <Button href={business.whatsappHref()} external size="lg">
+        <Icon name="message-circle" size={20} />Pedir presupuesto por WhatsApp
+      </Button>
+      <Button href={business.phoneHref} variant="secondary-ink" size="lg">
+        <Icon name="phone" size={20} />Llamar al {business.phoneDisplay}
+      </Button>
+    </div>
+
+    <ul class="mt-12 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-ink-line bg-ink-line md:mt-16 md:grid-cols-3">
+      {
+        trust.map((t) => (
+          <li class="flex items-center gap-3 bg-ink-2 px-5 py-4 text-[15px]">
+            <Icon name={t.icon} size={22} class="shrink-0 text-ink-accent" />
+            {t.text}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

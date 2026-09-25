@@ -1,0 +1,20 @@
+---
+interface Props {
+  id?: string;
+  tone?: 'default' | 'surface' | 'ink';
+  labelledby?: string;
+  class?: string;
+}
+const { id, tone = 'default', labelledby, class: className } = Astro.props;
+const tones = {
+  default: 'bg-bg text-text',
+  surface: 'bg-surface text-text',
+  ink: 'bg-ink text-on-ink',
+};
+---
+
+<section id={id} aria-labelledby={labelledby} class:list={[tones[tone], 'py-12 md:py-20', className]}>
+  <div class="mx-auto max-w-[1200px] px-4 md:px-6">
+    <slot />
+  </div>
+</section>

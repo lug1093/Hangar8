@@ -1,0 +1,20 @@
+---
+// Insignia provisoria dibujada a partir del logo de Instagram (hexágono rojo, tres
+// estrellas). Reemplazar por el vector original cuando llegue: ver PROGRESS.md.
+interface Props {
+  class?: string;
+  tone?: 'default' | 'ink';
+}
+const { class: className, tone = 'default' } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2.5', className]}>
+  <svg viewBox="0 0 48 40" width="40" height="34" aria-hidden="true" focusable="false">
+    <path d="M12 2h24l10 18-10 18H12L2 20Z" fill="none" stroke="var(--accent-solid)" stroke-width="4" stroke-linejoin="round" />
+    <path d="M10.5 22.5c3-3.8 7.8-6 13.8-6.2 4.6-.2 8.6 1.6 11.6 4.6l3.6.6c.8.2 1.3.8 1.3 1.6H9.5c0-.2.4-.4 1-.6Z" fill={tone === 'ink' ? 'var(--on-ink)' : 'currentColor'} />
+    <g fill={tone === 'ink' ? 'var(--on-ink)' : 'currentColor'}>
+      <circle cx="18" cy="29" r="1.4" /><circle cx="24" cy="30.5" r="1.4" /><circle cx="30" cy="29" r="1.4" />
+    </g>
+  </svg>
+  <span class="display text-[26px] leading-none tracking-wide">Hangar 8</span>
+</span>

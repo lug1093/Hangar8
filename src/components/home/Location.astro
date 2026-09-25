@@ -1,0 +1,60 @@
+---
+import { areas, business } from '../../data/site';
+import Section from '../site/Section.astro';
+import SectionHeading from '../site/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+---
+
+<Section id="contacto" tone="surface" labelledby="contacto-title">
+  <div class="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
+    <div>
+      <SectionHeading id="contacto-title" eyebrow="Contacto" title="Visitanos en Ituzaingó" />
+      <dl class="divide-y divide-line border-y border-line">
+        <div class="flex gap-4 py-4">
+          <dt class="flex items-center"><Icon name="map-pin" size={22} class="text-accent" /><span class="sr-only">Dirección</span></dt>
+          <dd>{business.address.street}, {business.address.city}, {business.address.region}</dd>
+        </div>
+        <div class="flex gap-4 py-4">
+          <dt class="flex items-center"><Icon name="clock" size={22} class="text-accent" /><span class="sr-only">Horario</span></dt>
+          <dd>{business.hours.label}</dd>
+        </div>
+        <div class="flex gap-4 py-4">
+          <dt class="flex items-center"><Icon name="phone" size={22} class="text-accent" /><span class="sr-only">Teléfono y WhatsApp</span></dt>
+          <dd><a href={business.phoneHref} class="underline underline-offset-4">{business.phoneDisplay}</a> · teléfono y WhatsApp</dd>
+        </div>
+      </dl>
+      <p class="mt-6 text-text-2">
+        Atendemos {areas.slice(0, -1).join(', ')} y {areas.at(-1)}, en la zona oeste del Gran Buenos Aires.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Button href={business.mapsHref} external variant="secondary">
+          <Icon name="map-pin" size={18} />Cómo llegar
+        </Button>
+        {
+          business.social.map((s) => (
+            <a href={s.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[44px] items-center text-[15px] font-medium underline underline-offset-4">
+              {`${s.label} ${s.handle}`}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+    <!-- Si el mapa no carga (bloqueador, sin red), queda la dirección debajo. -->
+    <div class="relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-bg">
+      <p class="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-text-2">
+        <Icon name="map-pin" size={28} class="text-accent" />
+        {business.address.street}, {business.address.city}
+      </p>
+      <iframe
+        src={business.mapsEmbed}
+        title={`Mapa: ${business.address.street}, ${business.address.city}`}
+        width="800"
+        height="480"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        class="relative block aspect-[4/3] h-auto w-full border-0 lg:aspect-auto lg:h-full lg:min-h-[400px]"
+      ></iframe>
+    </div>
+  </div>
+</Section>

@@ -1,0 +1,37 @@
+---
+// Primitiva de botón/enlace. Variantes cerradas; el área táctil de 44px va horneada.
+import type { HTMLAttributes } from 'astro/types';
+
+type Variant = 'primary' | 'secondary' | 'secondary-ink' | 'ghost';
+type Size = 'md' | 'lg';
+
+interface Props extends HTMLAttributes<'a'> {
+  href: string;
+  variant?: Variant;
+  size?: Size;
+  external?: boolean;
+}
+
+const { href, variant = 'primary', size = 'md', external = false, class: className, ...rest } = Astro.props;
+
+const base =
+  'inline-flex min-h-[44px] items-center justify-center gap-2 text-center rounded-[var(--radius-btn)] font-medium transition-colors duration-[120ms] select-none';
+
+const variants: Record<Variant, string> = {
+  primary: 'bg-accent-solid text-on-accent hover:bg-accent-solid-hover',
+  secondary: 'border border-edge text-text hover:bg-surface',
+  'secondary-ink': 'border border-on-ink-2 text-on-ink hover:bg-ink-2',
+  ghost: 'text-text hover:bg-surface',
+};
+
+const sizes: Record<Size, string> = {
+  md: 'px-4 text-[15px]',
+  lg: 'min-h-[52px] px-6 text-base',
+};
+
+const externalProps = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<a href={href} class:list={[base, variants[variant], sizes[size], className]} {...externalProps} {...rest}>
+  <slot />
+</a>

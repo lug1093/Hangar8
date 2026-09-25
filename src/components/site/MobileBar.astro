@@ -1,0 +1,38 @@
+---
+// Barra fija al pie en el teléfono: la acción principal al alcance del pulgar.
+import { business } from '../../data/site';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  whatsappText?: string;
+}
+const { whatsappText } = Astro.props;
+---
+
+<div
+  data-mobile-bar
+  class="fixed inset-x-0 bottom-0 z-30 transition-[translate,visibility] duration-[200ms] ease-out-soft data-[hidden]:invisible data-[hidden]:translate-y-full border-t border-line bg-bg/95 px-4 pt-3 backdrop-blur sm:hidden"
+  style="padding-bottom: max(12px, env(safe-area-inset-bottom));"
+>
+  <div class="flex gap-3">
+    <Button href={business.phoneHref} variant="secondary" class="shrink-0" aria-label={`Llamar al ${business.phoneDisplay}`}>
+      <Icon name="phone" size={18} />Llamar
+    </Button>
+    <Button href={business.whatsappHref(whatsappText)} external class="flex-1">
+      <Icon name="message-circle" size={18} />Pedir presupuesto
+    </Button>
+  </div>
+</div>
+
+<script>
+  // Mientras los botones del hero se ven, la barra no aparece: así hay un solo
+  // bloque rojo por pantalla. En páginas sin hero, la barra queda siempre visible.
+  const bar = document.querySelector<HTMLElement>('[data-mobile-bar]');
+  const hero = document.querySelector('[data-hero-cta]');
+  if (bar && hero && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      bar.toggleAttribute('data-hidden', entry.isIntersecting);
+    }).observe(hero);
+  }
+</script>

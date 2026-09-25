@@ -1,0 +1,105 @@
+---
+import CtaBand from '../../components/site/CtaBand.astro';
+import Section from '../../components/site/Section.astro';
+import SectionHeading from '../../components/site/SectionHeading.astro';
+import ServiceGrid from '../../components/site/ServiceGrid.astro';
+import Steps from '../../components/site/Steps.astro';
+import Button from '../../components/ui/Button.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { areas, business, services, type Service } from '../../data/site';
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+interface Props {
+  service: Service;
+}
+const { service } = Astro.props;
+const url = new URL(`/servicios/${service.slug}`, Astro.site).toString();
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: service.name,
+    serviceType: service.name,
+    description: service.intro,
+    url,
+    provider: { '@id': new URL('/#taller', Astro.site).toString() },
+    areaServed: areas.map((name) => ({ '@type': 'City', name })),
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site).toString() },
+      { '@type': 'ListItem', position: 2, name: 'Servicios', item: new URL('/#servicios', Astro.site).toString() },
+      { '@type': 'ListItem', position: 3, name: service.name, item: url },
+    ],
+  },
+];
+---
+
+<Base
+  title={`${service.name} en Ituzaingó | Hangar 8`}
+  description={`${service.intro.split('. ')[0]}. ${business.name}, ${business.address.street}, ${business.address.city}.`}
+  whatsappText={service.whatsappText}
+  schema={schema}
+>
+  <section aria-labelledby="servicio-title" class="bg-ink text-on-ink">
+    <div class="mx-auto max-w-[1200px] px-4 pb-12 pt-8 md:px-6 md:pb-16 md:pt-10">
+      <nav aria-label="Ruta" class="mb-8 text-sm text-on-ink-2">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="inline-flex min-h-[32px] items-center underline-offset-4 hover:underline">Inicio</a></li>
+          <li aria-hidden="true">/</li>
+          <li><a href="/#servicios" class="inline-flex min-h-[32px] items-center underline-offset-4 hover:underline">Servicios</a></li>
+          <li aria-hidden="true">/</li>
+          <li><span aria-current="page" class="font-medium text-on-ink">{service.name}</span></li>
+        </ol>
+      </nav>
+      <p class="mb-4 text-sm font-medium uppercase tracking-[0.14em] text-ink-accent">Servicio en {business.address.city}</p>
+      <h1 id="servicio-title" class="display text-[56px] md:text-[80px]">{service.name}</h1>
+      <p class="mt-5 max-w-[60ch] text-lg leading-7 text-on-ink-2">{service.intro}</p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row" data-hero-cta>
+        <Button href={business.whatsappHref(service.whatsappText)} external size="lg">
+          <Icon name="message-circle" size={20} />Pedir presupuesto por WhatsApp
+        </Button>
+        <Button href={business.phoneHref} variant="secondary-ink" size="lg">
+          <Icon name="phone" size={20} />Llamar al {business.phoneDisplay}
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <Section labelledby="incluye-title">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+      <SectionHeading id="incluye-title" eyebrow="Qué incluye" title={`${service.name}: qué hacemos`} />
+      <ul class="divide-y divide-line border-y border-line">
+        {
+          service.includes.map((item) => (
+            <li class="flex gap-3 py-4 text-lg">
+              <Icon name="check" size={22} class="mt-0.5 shrink-0 text-accent" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Section>
+
+  <Section tone="surface" labelledby="pasos-title">
+    <SectionHeading id="pasos-title" eyebrow="Cómo trabajamos" title="Tres pasos y tu auto está listo" />
+    <Steps />
+    <p class="mt-6 flex items-center gap-2 text-text-2">
+      <Icon name="shield-check" size={20} class="text-accent" />
+      Trabajamos con todas las compañías de seguro y retiramos y entregamos a domicilio.
+    </p>
+  </Section>
+
+  <Section labelledby="otros-title">
+    <SectionHeading id="otros-title" eyebrow="Otros servicios" title="También hacemos" />
+    <ServiceGrid exclude={service.slug} />
+  </Section>
+
+  <CtaBand whatsappText={service.whatsappText} />
+</Base>

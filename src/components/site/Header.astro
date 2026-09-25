@@ -1,0 +1,119 @@
+---
+import { business, nav } from '../../data/site';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Logo from './Logo.astro';
+
+const current = Astro.url.pathname;
+---
+
+<div class="hidden bg-ink-2 text-on-ink-2 md:block">
+  <div class="mx-auto flex h-9 max-w-[1200px] items-center justify-between px-6 text-[13px]">
+    <p class="flex items-center gap-2">
+      <Icon name="map-pin" size={14} />
+      {business.address.street}, {business.address.city}
+    </p>
+    <div class="flex items-center gap-6">
+      <p class="flex items-center gap-2"><Icon name="clock" size={14} />{business.hours.label}</p>
+      <a href={business.phoneHref} class="flex items-center gap-2 text-on-ink hover:underline">
+        <Icon name="phone" size={14} />{business.phoneDisplay}
+      </a>
+    </div>
+  </div>
+</div>
+
+<header class="sticky top-0 z-40 border-b border-ink-line bg-ink text-on-ink">
+  <div class="mx-auto flex h-[var(--header-h)] max-w-[1200px] items-center justify-between gap-4 px-4 md:px-6">
+    <a href="/" class="-m-1 p-1" aria-label="Hangar 8, inicio">
+      <Logo tone="ink" />
+    </a>
+
+    <nav aria-label="Principal" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="inline-flex min-h-[44px] items-center rounded-[var(--radius-btn)] px-3 text-[15px] text-on-ink-2 transition-colors duration-[120ms] hover:text-on-ink"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <!-- El display va en el contenedor: `hidden` sobre el Button empata en
+           especificidad con su `inline-flex` y pierde por orden en el CSS. -->
+      <div class="hidden sm:block">
+        <Button href={business.whatsappHref()} external variant="secondary-ink">
+          <Icon name="message-circle" size={18} />Pedir presupuesto
+        </Button>
+      </div>
+      <button
+        type="button"
+        class="inline-flex size-11 items-center justify-center rounded-[var(--radius-btn)] text-on-ink hover:bg-ink-2 lg:hidden"
+        aria-label="Abrir menú"
+        aria-haspopup="dialog"
+        data-menu-open
+      >
+        <Icon name="menu" size={24} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Única implementación de hoja modal del sitio: <dialog> nativo con showModal()
+     da aria-modal, foco atrapado, Escape y retorno del foco sin reimplementarlos. -->
+<dialog
+  id="menu"
+  aria-labelledby="menu-title"
+  class="m-0 ml-auto h-dvh max-h-none w-[min(360px,100vw)] max-w-none bg-ink p-0 text-on-ink backdrop:bg-black/60"
+>
+  <div class="flex h-[var(--header-h)] items-center justify-between border-b border-ink-line px-4">
+    <h2 id="menu-title" class="display text-[22px]">Menú</h2>
+    <button
+      type="button"
+      class="inline-flex size-11 items-center justify-center rounded-[var(--radius-btn)] hover:bg-ink-2"
+      aria-label="Cerrar menú"
+      data-menu-close
+    >
+      <Icon name="x" size={24} />
+    </button>
+  </div>
+  <nav aria-label="Principal, móvil" class="px-2 py-4">
+    <ul>
+      {
+        nav.map((item) => (
+          <li>
+            <a href={item.href} class="flex min-h-[52px] items-center rounded-[var(--radius-btn)] px-3 text-lg hover:bg-ink-2" data-menu-link>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <div class="space-y-3 border-t border-ink-line px-4 py-6 text-[15px] text-on-ink-2">
+    <p class="flex items-center gap-2"><Icon name="map-pin" size={16} />{business.address.street}, {business.address.city}</p>
+    <p class="flex items-center gap-2"><Icon name="clock" size={16} />{business.hours.label}</p>
+  </div>
+  <div class="px-4">
+    <Button href={business.whatsappHref()} external size="lg" class="w-full">
+      <Icon name="message-circle" size={20} />Pedir presupuesto
+    </Button>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('menu') as HTMLDialogElement | null;
+  document.querySelector('[data-menu-open]')?.addEventListener('click', () => dialog?.showModal());
+  document.querySelector('[data-menu-close]')?.addEventListener('click', () => dialog?.close());
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  dialog?.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => dialog.close()));
+</script>

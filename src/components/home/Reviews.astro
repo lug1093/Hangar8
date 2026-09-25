@@ -1,0 +1,40 @@
+---
+import { SHOW_PLACEHOLDERS } from '../../config/flags';
+import { googleReviewsHref, reviews } from '../../data/site';
+import Section from '../site/Section.astro';
+import SectionHeading from '../site/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import PlaceholderTag from '../ui/PlaceholderTag.astro';
+
+const visible = reviews.filter((r) => SHOW_PLACEHOLDERS || !r.placeholder);
+---
+
+{
+  visible.length > 0 && (
+    <Section id="resenas" tone="surface" labelledby="resenas-title">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <SectionHeading id="resenas-title" eyebrow="Reseñas" title="Lo que dicen nuestros clientes" />
+        {googleReviewsHref && (
+          <Button href={googleReviewsHref} external variant="secondary" class="mb-8 self-start md:self-auto">
+            Ver todas en Google
+          </Button>
+        )}
+      </div>
+      <ul class="grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line md:grid-cols-3">
+        {visible.map((r) => (
+          <li class="flex flex-col gap-4 bg-bg p-5 md:p-6">
+            <p class="flex items-center justify-between gap-2">
+              <span class="text-accent" aria-hidden="true">{'★'.repeat(r.rating)}</span>
+              <span class="sr-only">{r.rating} de 5 estrellas</span>
+              {r.placeholder && <PlaceholderTag />}
+            </p>
+            <blockquote class="text-[17px] leading-7">“{r.text}”</blockquote>
+            <p class="mt-auto text-sm text-text-2">
+              <span class="font-medium text-text">{r.name}</span> · {r.car}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}
