@@ -20,6 +20,7 @@ de los datos (fase 2) y de las cuentas (dominio, Vercel, Google).**
 - [x] Contrastes medidos en `docs/DESIGN.md`
 - [x] Revisión de alineación y espacios (ver `docs/DESIGN.md`)
 - [x] `vercel.json` listo para el deploy definitivo
+- [x] Speed Insights descartado; Web Analytics queda como opción cuando se pida (D-17)
 - [x] Guías: `docs/PARA_EL_TALLER.md` (qué pedir y cómo) y `docs/PUBLICAR.md` (dominio, Vercel, Google)
 
 ## Datos pendientes del taller (fase 2)

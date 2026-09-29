@@ -159,3 +159,27 @@ texto largo que rompe una grilla a 320px no llega a publicarse.
 (D-11), caché larga para `/_astro/` (los archivos llevan hash) y encabezados de
 seguridad básicos. No lleva CSP: el mapa embebido y los scripts inline la
 complicarían sin un beneficio proporcional para un sitio sin formularios.
+
+## D-17. Speed Insights no; Web Analytics cuando se pida
+
+Al conectar el repo, Vercel abrió la rama `vercel/install-vercel-speed-insights-*`
+con Speed Insights en `Base.astro`. **Se descartó y la rama se borró**, porque:
+
+1. Carga `/_vercel/speed-insights/script.js`, que solo existe en Vercel. En la vista
+   previa de GitHub Pages y en `npm run check` ese archivo da 404, el navegador
+   registra un error de consola y el chequeo falla, así que bloquearía la
+   publicación.
+2. La sección 7 de `CLAUDE.md` deja la analítica afuera hasta que se pida, y esto es
+   un script de terceros en cada página.
+3. Mide velocidad con visitas reales, y la velocidad ya está medida (Lighthouse 100,
+   D-15). Sin tráfico todavía, no aporta datos.
+
+**Si se pide medir**, la opción es **Vercel Web Analytics**, que es la excepción
+del playbook para sitios que existen para ser encontrados (sección 2): cuenta
+visitas y de dónde vienen, sin cookies, y responde lo que al taller le importa, si
+llega gente desde Google. Condiciones para sumarla:
+
+- Solo en el build de producción: no en la vista previa (`PUBLIC_PREVIEW`) ni en el
+  chequeo local, para que no falle por el 404 de arriba.
+- Activarla también en el panel de Vercel (**Analytics → Enable**).
+- Anotar en este archivo la fecha y que el dueño del taller sabe qué se mide.
