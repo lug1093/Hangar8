@@ -86,7 +86,7 @@ necesita otro tratamiento. Sin botón de tema: nadie lo busca en un sitio de tal
 `astro preview` en Astro 7 queda corriendo como demonio: la segunda corrida del
 chequeo encontró el servidor viejo y habría medido contra un build anterior. El
 script sirve `dist/` con un servidor propio en un puerto libre y lo baja al
-terminar (playbook, sección 12, regla 4).
+terminar (playbook, sección 13, regla 4).
 
 ## D-10. Vista previa en GitHub Pages
 

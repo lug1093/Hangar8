@@ -1,6 +1,6 @@
 // Servidor estático propio sobre dist/, en un puerto libre, para los chequeos.
 // No se usa `astro preview`: en Astro 7 queda corriendo como demonio y una segunda
-// corrida mide contra el build anterior sin avisar (playbook, sección 12, regla 4).
+// corrida mide contra el build anterior sin avisar (playbook, sección 13, regla 4).
 // Comprime y cachea como lo hace Vercel, para que Lighthouse mida algo parecido a
 // producción.
 import { readFile, stat } from 'node:fs/promises';

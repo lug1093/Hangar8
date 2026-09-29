@@ -1,4 +1,4 @@
-// Chequeo de cierre para un sitio institucional (playbook, sección 12):
+// Chequeo de cierre para un sitio institucional (playbook, sección 13):
 // levanta su propio servidor (scripts/serve.mjs), recorre cada página en varios
 // anchos y en los dos temas, corre axe, mide desborde horizontal y áreas táctiles,
 // guarda capturas en .checks/ y baja el servidor al terminar.

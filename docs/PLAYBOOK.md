@@ -1,8 +1,8 @@
 # Playbook
 
 Lo que aprendimos construyendo **Hold**, **Listas Dharma**, **colegio-torneos**,
-**portfolio**, **giotech-portfolio**, **Kit Offline** y **Hangar 8**, escrito una sola vez para
-no volver a discutirlo.
+**portfolio**, **giotech-portfolio**, **Kit Offline**, **Carnal**, **Futbolapp** y
+**Hangar 8**, escrito una sola vez para no volver a discutirlo.
 
 Este documento no es teoría de UX. Cada regla de acá se pagó con un bug, una
 prueba con gente real, una medición, o una sesión entera de idas y vueltas. Por eso
@@ -21,6 +21,9 @@ sesión futura la "mejore" sin saber qué estaba resolviendo.
    vueltas no son código malo: son especificación faltante que se descubre tarde.
 4. Si un proyecto necesita romper una regla de acá, se escribe por qué en su
    `DECISIONS.md`. Romperla en silencio es el problema, no romperla.
+5. Si la base va a guardar datos de otra gente, **§18 se lee antes de la primera
+   migración**. Y cada tanto, `plantilla/AUDITORIA.md` audita el proyecto de afuera
+   (§19).
 
 **Regla de oro de este archivo**: si una decisión ya está acá, no se vuelve a
 discutir en cada proyecto. Ese es todo el punto.
@@ -65,6 +68,7 @@ reabrirla cada vez.
 | App personal, local-first, tiene que andar sin red | **Vite + React + TypeScript strict** + Dexie (IndexedDB) + `vite-plugin-pwa` | `Hold` |
 | Plataforma con panel de gestión y datos relacionales | **Next.js** + Prisma + Postgres (Neon) + shadcn/ui + tokens generados | `colegio-torneos` |
 | Herramienta puntual sin backend, privacidad como argumento | HTML + JS vanilla + dependencias vendorizadas en el repo | `QR-code` (Kit Offline) |
+| Tienda online con pagos, checkout sin cuenta y panel del comercio | **Next.js (App Router)** + Supabase (Postgres + Auth del personal + Realtime + Storage), **sin Prisma** (se saltea RLS) + Mercado Pago **Checkout Pro** + Vercel. Reglas propias en la sección 12 | `carnalmeats` |
 
 ### Dependencias permitidas por defecto
 
@@ -94,6 +98,14 @@ En Hold, `motion` pesaba 68 KB gzip y empujaba el bundle inicial a 223 KB contra
 techo de 200. Se reemplazó por una curva CSS con overshoot
 (`cubic-bezier(0.34, 1.56, 0.64, 1)`) que a 18px de diámetro se lee igual que el
 spring. Resultado final: 161 KB. La animación no se perdió; la dependencia sí.
+
+**El presupuesto depende del framework, y se fija midiendo, no copiando.** En Carnal
+se copió el techo de Hold (Vite, 200 KB) y se bajó a 150 sin medir: con Next 16,
+React y el runtime solos son ~180 KB gzip. Medido, la home pesaba 236 KB y el
+carrito 335. Lo que se recortó: el Toast de Base UI (32 KB en **todas** las páginas)
+por uno propio de ~2 KB, y zod con libphonenumber (118 KB en el carrito) que solo
+validaban en el navegador lo mismo que ya validaba el servidor. Quedaron entre 187 y
+217 KB, y el techo se corrigió a 230 con el número real. (Carnal, D-017)
 
 ---
 
@@ -427,7 +439,14 @@ base, que hoy está partida: `portfolio` sobre Radix, `colegio-torneos` sobre Ba
 - Base UI: pasar `nativeButton={false}` cuando el `Button` renderiza algo que no es un
   `<button>` (por ejemplo un `next/link` vía render prop).
 - Tailwind: un `--font-sans` autorreferencial hace que toda la app caiga al serif por
-  defecto del navegador, sin ningún error de build.
+  defecto del navegador, sin ningún error de build. Lo mismo con cualquier token de
+  `@theme inline` escrito como `--radius-card: var(--radius-card)`: los que no son
+  alias de una variable de `:root` van en un bloque `@theme` con el valor directo.
+  (Carnal)
+- Field con `id` fijo: si el control necesita un id propio (para enfocar el primer
+  error), lo recibe el **Field**, que se lo pasa al label y al control. Pisarlo en el
+  control deja el label apuntando a otro id: todos los campos del checkout quedaron
+  sin label y solo lo vio un recorrido de Playwright que buscaba por label. (Carnal)
 - Tailwind: `class="hidden sm:inline-flex"` sobre un componente cuya clase base ya
   trae `inline-flex` **no oculta nada**: las dos utilidades tienen la misma
   especificidad y gana la que Tailwind escribe después en el CSS. En `Hangar 8` el
@@ -671,6 +690,14 @@ pastilla de color grande por estado.
 - **Supabase**: RLS desde la primera tabla, y **los `grant` a `anon` también**: sin
   los grants, las policies no alcanzan y todo responde "permission denied" con el
   esquema aparentemente bien.
+- **Supabase da `execute` a `anon` sobre toda función nueva de `public`.** Una
+  función que solo debe llamar el servidor (crear un pedido) necesita
+  `revoke all ... from public, anon, authenticated`. Se descubrió saboteando la
+  migración: sin el revoke, el test "anon no puede crear pedidos" fallaba. (Carnal)
+- **Probar RLS contra un Postgres real**, con una capa que imite a Supabase (roles
+  `anon`, `authenticated`, `service_role`, `auth.uid()` leyendo el JWT, y sus
+  permisos por defecto **amplios**). Con permisos amplios, lo que se prueba es que
+  protege RLS, que es como funciona Supabase de verdad. (Carnal, `supabase/test/`)
 - **Sin login**: la identidad es un apodo guardado en el dispositivo y el control de
   acceso es que el link no se comparte. En vez de permisos, un registro de acciones.
 - **Google OAuth no sirve si el canal de distribución es WhatsApp**: WhatsApp abre los
@@ -687,11 +714,98 @@ pastilla de color grande por estado.
   `generateMetadata` por ruta, sitemap con todas las ediciones, y `robots.txt` que
   bloquea el panel.
 - **Datos de desarrollo que ejerciten todos los estados** (terminado, en curso,
-  programado, borrador) y que **se nieguen a correr contra producción**.
+  programado, borrador) y que **se nieguen a correr contra producción**. En Carnal,
+  el backend en memoria tira error si detecta `VERCEL_ENV=production`, y en cualquier
+  deploy exige `SESSION_SECRET` y contraseña propia: una preview es pública.
+- **Backend en memoria + caché de Next en disco no se mezclan.** La caché de
+  `unstable_cache` sobrevive al reinicio y la base en memoria no: el carrito mostraba
+  productos existentes como "ya no están" porque los ids eran de la corrida
+  anterior. En memoria no se cachea, y los ids de ejemplo son deterministas. (Carnal)
+
+Si la base guarda datos de gente que no sos vos, **§18 no es opcional**: multi-tenant,
+RLS, guards que hacen fallar el deploy, consentimiento y retención.
 
 ---
 
-## 12. Pruebas
+## 12. Tienda online y pagos
+
+Lo que un sitio institucional o una app de listas no enseña. Todo salió de Carnal
+(carnicería con Mercado Pago, checkout sin cuenta y panel), y cada regla tiene un
+test que la rompe a propósito.
+
+### El precio
+
+- **El servidor recalcula todo.** El carrito del navegador guarda qué y cuánto,
+  nunca cuánto cuesta. Al confirmar, el servidor recotiza contra el catálogo de ese
+  momento; un precio que venga en el pedido se ignora (hay un test que lo manda).
+- **El carrito se cotiza en vivo, sin caché**, aunque el catálogo público esté
+  cacheado: lo que se ve al confirmar es exactamente lo que se cobra.
+- **Copia del precio en cada ítem del pedido.** Un aumento posterior no toca
+  pedidos ya hechos, y "repetir pedido" usa los precios de hoy.
+- **Dinero en enteros**, y el redondeo de una línea en una sola función: en coma
+  flotante, 6950 × 0,25 no da 1737,5.
+- **Aumento masivo con vista previa y deshacer**, y el deshacer se niega si alguien
+  tocó a mano un precio del lote después (si no, lo pisa en silencio).
+
+### El pago
+
+- **Checkout Pro (redirección) antes que un formulario de tarjeta propio**: cero
+  datos de tarjeta en el sitio, cero superficie PCI.
+- **La vuelta del navegador nunca marca nada como pagado.** Se paga solo con la
+  firma del webhook válida (HMAC con comparación en tiempo constante) **y** el pago
+  consultado a la API con `external_reference`, monto y moneda correctos.
+- **Idempotencia en la base, no en la memoria del proceso**: id de pago único, y los
+  cambios de estado son "comparar y cambiar" (`update ... where status = esperado`).
+  Tres notificaciones simultáneas del mismo pago cobran una sola vez.
+- **Un pago aprobado siempre gana**: reactiva un pedido vencido y, sobre uno
+  cancelado, queda para devolver. **Un segundo pago del mismo pedido se registra
+  igual** (para que la caja cierre) y queda para devolver: antes se perdía en
+  silencio.
+- **Conciliación desde la vuelta**: si el webhook no llegó, la página del pedido
+  consulta a la API por la referencia. Probado con un "pago sin notificación".
+- **Vencimiento derivado de la fecha, no de un cron**: el plan gratis de Vercel corre
+  crons una vez por día.
+- **Un simulador de la pasarela que firma igual que la real**, solo en desarrollo
+  (404 en cualquier otro modo, con test). Así el webhook verdadero se prueba de punta
+  a punta sin credenciales: aprobado, rechazado, sin notificación, monto distinto.
+
+### Seguimiento sin cuenta
+
+- **Un token de 128 bits en el link del pedido es el control de acceso.** El número
+  visible (#1001) es otro campo: nunca la clave.
+- **La referencia se guarda en el teléfono antes de ir a pagar**, y el link de vuelta
+  lleva el token: desde Instagram o WhatsApp, el pago puede abrir la app de la
+  pasarela y volver a otro navegador, con otro almacenamiento.
+- **La búsqueda por teléfono devuelve número, fecha y estado. Nada más.** Con solo el
+  número de alguien no se ve su dirección ni lo que compró.
+
+### Abuso
+
+- Un checkout sin cuenta con "pago en persona" deja llenar la cola de pedidos falsos:
+  Turnstile más límite por IP (hasheada) y por teléfono.
+
+### Argentina
+
+- Celulares siempre como `+549...`: el 9 se olvida y `wa.me` no funciona sin él.
+- Mercado Pago: `binary_mode` (solo aprobado o rechazado) y excluir `ticket` y `atm`
+  si se prepara en el día: Rapipago y Pago Fácil dejan pagos pendientes por días.
+- **Botón de Arrepentimiento** (Disposición 954/2025, reemplazó a la 424/2020):
+  visible desde la primera pantalla, sin registro, con código de trámite y llegada
+  al panel para responder en 5 días hábiles. Los perecederos pueden estar exceptuados
+  (art. 1116 CCyC), pero el botón va igual.
+- Legales publicados antes de recolectar datos reales, marcados como borrador hasta
+  la revisión de un abogado.
+
+### Pruebas que agrega una tienda
+
+Además de la tabla de la sección 13: compra de punta a punta con cada medio de pago,
+notificación duplicada, simultánea, fuera de orden y que nunca llega, carrito
+manipulado, producto desactivado con el carrito armado, y el panel de punta a punta
+(de la web a entregado, y la caja suma).
+
+---
+
+## 13. Pruebas
 
 Proporcionalidad primero: **el nivel de pruebas depende de quién usa la app.**
 
@@ -700,6 +814,7 @@ Proporcionalidad primero: **el nivel de pruebas depende de quién usa la app.**
 | Proyecto personal, un usuario | Solo lógica de dominio (Vitest). Sin tests de UI ni E2E |
 | App que usa un grupo de gente | Casos de uso de punta a punta, bordes, carreras, pantallas |
 | Sitio institucional | Build sin errores, recorrido visual a mano, axe, Lighthouse, alineación de grillas medida, imagen para compartir en cada página |
+| Tienda que cobra | Todo lo de "app de grupo", más la base con RLS contra Postgres real y los pagos de la sección 12 |
 
 ### El método que funcionó (Dharma, 212 comprobaciones)
 
@@ -719,7 +834,7 @@ Seis archivos, cada uno con una pregunta distinta:
 | `recorrido` | El onboarding completo, incluso con la app vacía |
 | `parseo` | Los importadores, sin navegador |
 
-### Cuatro reglas
+### Cinco reglas
 
 1. **La prueba tiene que morder.** Verificá que falla cuando rompés a propósito lo
    que mide. En Dharma, una comprobación de áreas táctiles no medía nada porque el
@@ -741,6 +856,32 @@ Seis archivos, cada uno con una pregunta distinta:
    runner sirve `dist/` con un servidor propio de 40 líneas (`node:http`), que además
    comprime y cachea como Vercel para que Lighthouse no penalice lo que en producción
    no pasa.
+5. **Un test puede pasar por el motivo equivocado, y se ve idéntico a uno que pasa
+   por el correcto.** En `Futbolapp`, cuatro hallazgos salieron de ahí: un `delete`
+   que daba cero filas porque se quejó una FK y no porque la policy filtrara; un
+   login rechazado por código inválido y no por falta de permiso; un `update` que
+   rebotaba contra un `check` antes de llegar a la regla que se quería probar. La
+   defensa son **helpers de aserción que exigen el motivo**, no solo el resultado
+   (playbook §18), y romper a propósito lo que la prueba mide.
+
+   Dos formas concretas de escribir un test que no puede fallar, las dos vistas en la
+   misma tarde:
+
+   - **Juntar violaciones y exigir lista vacía.** Si el patrón que las busca no
+     matchea nada, la lista sale vacía y el caso pasa para siempre. Pasó con un
+     `grep` de claves de `localStorage` que solo veía literales, contra un archivo que
+     guardaba con una constante: matcheaba cero, y renombrar la clave no lo movía. La
+     forma que sí falla es un **inventario positivo**: calculá el conjunto y exigí que
+     sea igual al esperado. Así falla en los dos sentidos, si aparece algo nuevo y si
+     el patrón deja de encontrar lo viejo.
+   - **Medir una consecuencia que dos causas comparten.** Contar filas después de
+     borrar la base da cero, y vaciar la tabla también. El caso no distinguía una cosa
+     de la otra. Preguntá por lo que solo la causa correcta produce (`Dexie.exists()`,
+     no `count()`).
+
+   Y un tercero: **si todos los casos inyectan una dependencia, el valor por defecto
+   no lo prueba nadie**, que es justo el que corre en producción. Sacarle
+   `sessionStorage` al default dejaba los seis casos en verde.
 
 **El chequeo corre en CI y es la condición para publicar.** En `Hangar 8` el job
 `check` (axe, desborde, áreas táctiles, alineación, imagen para compartir) tiene que
@@ -757,7 +898,7 @@ En el entorno remoto, Chromium ya está instalado y Playwright configurado: no c
 
 ---
 
-## 13. Rendimiento
+## 14. Rendimiento
 
 Presupuesto explícito, medido, en una tabla del proyecto. El de Hold, como
 referencia de qué se mide:
@@ -843,7 +984,7 @@ apunten a algo que existe. (`Hangar 8`)
 
 ---
 
-## 14. Antipatrones ya pagados
+## 15. Antipatrones ya pagados
 
 No proponer estas cosas. Ya se evaluaron y se descartaron con motivo.
 
@@ -869,7 +1010,22 @@ No proponer estas cosas. Ya se evaluaron y se descartaron con motivo.
 | Google Sheets como interfaz | Fricción alta en el teléfono, media población no lo abre |
 | Otra app que haya que instalar | Nadie se baja otra app. Link fijado en el grupo |
 | Spinners y skeletons con datos locales | Si hace falta un spinner, el problema es de rendimiento |
-| Analytics y telemetría en apps personales | No aportan nada y agregan peso y superficie. No aplica a un sitio que existe para ser encontrado (ver sección 2) |
+| Analytics y telemetría en apps personales | No aportan nada y agregan peso y superficie. No aplica a un sitio que existe para ser encontrado (ver sección 2), ni a un comercio con pauta: ahí van, apagados hasta tener el ID y la explicación al dueño |
+| Guardar el precio en el carrito y cobrar con él | Se manipula desde el navegador. El servidor recotiza |
+| Marcar pagado con los parámetros de vuelta de la pasarela | Se falsifican. Solo el webhook firmado más la consulta a la API |
+| Validar el mismo formulario en navegador y servidor con zod | 60 KB o más en el navegador para ahorrar 100 ms. Valida el servidor y devuelve el campo que falla |
+| `pkill -f "next ..."` en una sesión de agente | El patrón coincide con el propio comando y mata la shell. Bajar el servidor por puerto |
+| Fuentes servidas desde el CDN de un tercero | Manda la IP de cada visita, bloquea el primer pintado, y obliga a abrir la CSP. Self-hosted |
+| Resolver el tenant por el subdominio para decidir permisos | Editar la URL es leer los datos de otro cliente |
+| Una regla escrita con una función que nadie llama | `borrarTodo()` existía, estaba testeada, y su único llamador era su propio test. La regla parecía cumplida |
+| Revisar seguridad releyendo el diff de las migraciones | Una policy permisiva y una correcta se ven iguales. Se mide sentándose como el usuario |
+| Dar por probada una función que nadie puede ejecutar | Sin `EXECUTE`, ningún test la corrió nunca. La primera ejecución real fue en producción |
+| Un `raise` adentro de una función que cuenta intentos | Revierte la fila que cuenta, así que el rate limit no se alcanza jamás |
+| Un checkbox de consentimiento sin texto versionado | No es consentimiento informado, es un campo booleano |
+| Filtrar como "ruido" un error que el entorno de prueba provoca | El check visual silenciaba los fallos de Google Fonts porque el sandbox los bloquea. Todas las mediciones se tomaron con la fuente del sistema y no con la que se publica |
+| Poner `style-src-attr 'unsafe-inline'` sin medir | React aplica estilos por CSSOM, que la CSP no gobierna. Se pone por reflejo y afloja la política para nada |
+| Dar una CSP por buena porque las pantallas cargan | No prueba `connect-src`, que es la directiva que impide la exfiltración, y menos si el backend todavía es falso |
+| Anotar una deuda adentro de una decisión sobre otra cosa | Las fuentes de terceros quedaron escritas como nota al pie de una decisión tipográfica. Parecían un detalle de rendimiento hasta que una auditoría las volvió a encontrar. Una deuda anotada en la sección equivocada no está anotada |
 | Inventar reseñas, métricas o logos para que el diseño "se vea completo" | Si llega a publicarse, el sitio pierde lo único que vende, la confianza. Placeholder visible y apagable (sección 8) |
 | Widget de reseñas de Google embebido | Pesado, de terceros, rompe el diseño y el rendimiento. Reseñas copiadas con permiso y un link al perfil |
 | Medir contra `astro preview` (o cualquier preview que quede corriendo) | En Astro 7 queda como demonio y la siguiente corrida mide el build anterior. Servidor propio en el runner |
@@ -877,7 +1033,7 @@ No proponer estas cosas. Ya se evaluaron y se descartaron con motivo.
 
 ---
 
-## 15. Cómo trabajar con Claude Code
+## 16. Cómo trabajar con Claude Code
 
 Esta sección es la que más tiempo y tokens ahorra.
 
@@ -982,7 +1138,7 @@ Lo que efectivamente baja el consumo y las idas y vueltas:
 
 ---
 
-## 16. Checklist de cierre de hito
+## 17. Checklist de cierre de hito
 
 Antes de dar algo por terminado:
 
@@ -1021,7 +1177,205 @@ Antes de dar algo por terminado:
 
 ---
 
-## 17. De dónde salió cada cosa
+## 18. Backend, multi-tenant y datos de terceros
+
+Esta sección **no aplica a un proyecto personal**. Aplica cuando la base guarda datos
+de gente que no sos vos, y se vuelve obligatoria cuando esos datos son de menores o
+de salud. Está destilada de `Futbolapp`, donde salieron midiendo, no leyendo.
+
+### Las tres formas de trabajar, antes que la lista
+
+**1. Medir, no releer.** Ninguno de los siete agujeros de aislamiento que aparecieron
+en `Futbolapp` salió de releer las migraciones. Salieron de **preguntarle a la base
+qué podía alcanzar una persona concreta**: "sentate como el profe Sole y contame
+cuántas familias podés borrar". Respuesta: las 74.
+
+Una policy permisiva y una correcta **se ven idénticas en el código fuente**. Por eso
+revisar el diff no encuentra nada y sentarse en la silla del usuario encuentra siete.
+El script que hace esa pregunta (`auditoria.sh`: por cada rol, qué tabla alcanza y con
+qué verbo) **corre en CI y falla ante una regresión**, así que la respuesta no se
+saca una vez, se sostiene.
+
+**2. Un guard por invariante, adentro de la migración.** No un test al lado: una
+función que corre como parte del deploy y lo hace fallar.
+
+| Guard | Invariante |
+|---|---|
+| `verificar_rls()` | Ninguna tabla sin RLS habilitada y **forzada** |
+| `verificar_permisos()` | Ningún rol secundario con un permiso sin restricción |
+| `verificar_limites()` | Ningún `text` ni `jsonb` que escriba un cliente sin cota |
+| Lista de funciones llamables | Nada expuesto al navegador que no esté declarado |
+
+Tres de los cuatro encontraron algo **la primera vez que corrieron**. Y el cuarto
+enseñó otra cosa: **un guard agregado antes de lo que vigila es decoración.** El de
+permisos se había pegado al final del archivo con `>>` y quedó corriendo antes de la
+sección 8 de esa misma migración, así que validaba un schema a medio construir y daba
+verde siempre.
+
+**3. La prueba tiene que morder, versión base de datos.** Un script que **rompe el
+schema a propósito** de 26 formas (saca un `force`, afloja una policy, borra un
+check) y exige que la suite falle en cada una.
+
+De los hallazgos reales, **cuatro salieron porque un sabotaje NO mordía**: o sea
+porque un test verde estaba pasando por el motivo equivocado. Ese es el rendimiento
+del método, y es mayor que el de la suite misma.
+
+### Los helpers de aserción importan más que las aserciones
+
+Tres de esos cuatro se descubrieron porque el helper no distinguía **por qué** algo
+fue rechazado. Un `delete` que devuelve 0 filas puede ser "la policy te filtró" o
+"había una FK que se quejó". Un login que rechaza puede ser "no tenés permiso" o "el
+código está mal". En los dos casos la prueba pasa y **una de las dos razones es un
+agujero**.
+
+| Helper | Qué exige |
+|---|---|
+| `rechaza` | Excepción **o** cero filas |
+| `sin_efecto` | Cero filas **y sin excepción** (o sea: la policy te filtró, no una FK) |
+| `rechaza_por_permiso` | Que el sqlstate sea exactamente `42501` |
+| `no_lee` | Cero filas en un select que debería ver algo si tuviera acceso |
+| `sigue_existiendo` | Que la fila que se intentó borrar siga ahí |
+
+Y un detalle de plomería que cuesta una hora si no está escrito: **el contador de
+casos va en una secuencia, no en una tabla.** Si cada caso hace rollback para dejar la
+base limpia, un contador en una tabla vuelve para atrás con él y los casos se numeran
+todos igual. Las secuencias no son transaccionales, que acá es exactamente lo que se
+necesita.
+
+### Lo que no se negocia
+
+1. **El tenant sale del token, nunca del hostname.** Si el subdominio eligiera los
+   datos, editar la URL sería leer los de otro cliente. (Antipatrón pagado)
+2. **`tenant_id` en todas las tablas y FK compuestas `(padre_id, tenant_id)`.** La FK
+   hace que el motor rechace una fila cruzada **aunque la policy esté mal**. Es la
+   segunda capa, y es la que no depende de haber pensado bien.
+3. **RLS habilitada y forzada.** Sin `force`, el dueño de la tabla la saltea.
+4. **La policy genérica de "cualquier miembro del tenant" es el default peligroso.**
+   Da CRUD completo al rol más chico. Antes de usarla, preguntá si esa persona debería
+   poder **borrar** eso. De ahí salieron tres de los siete agujeros.
+5. **Un dato sensible se lee solo por una función que registra el acceso**, en la
+   misma transacción. El select directo se revoca para todos, el administrador
+   incluido. Un requisito legal que depende de que alguien se acuerde de escribir el
+   log no es un requisito.
+6. **El autor de una fila de auditoría no lo elige el cliente**: `user_id =
+   auth.uid()` en el `with check`, y NOT NULL. Si no, alguien escribe un acceso a
+   nombre de otro.
+7. **Una función `security definer` autoriza a su llamador, adentro.** No alcanza con
+   no otorgarle `EXECUTE`: eso no es un chequeo, es la **ausencia** de uno, y se rompe
+   con el primer `grant` apurado.
+8. **Una función sin grants es una función que nunca se ejecutó.** Al mover la
+   autorización adentro y otorgar el `EXECUTE`, apareció un bug de casteo que llevaba
+   meses ahí: la función **nunca había corrido**. Si nadie la puede llamar, ningún test
+   la probó.
+9. **PostgREST expone un solo schema.** Una función en cualquier otro es inalcanzable
+   por más grants que tenga. Wrapper fino en el schema expuesto, grant explícito, y
+   sumarlo a la lista del guard.
+10. **Un solo mensaje para toda falla de login.** Distinguir "ese usuario no existe"
+    de "esa clave está mal" es un oráculo de enumeración. El motivo va al log del
+    servidor.
+11. **Una función que cuenta intentos NO puede fallar con `raise`.** El `raise`
+    revierte todo lo que hizo la sentencia, **incluida la fila que cuenta el intento**,
+    así que el límite no se alcanza nunca y el rate limit no existe. Devolvé un
+    resultado.
+12. **Todo lo que escribe un cliente tiene cota de tamaño.** El rol anónimo llegó a
+    escribir un payload de 2 MB. Un `jsonb` sin límite no es una decisión que se tomó:
+    es una que se salteó.
+13. **Archivos sensibles en buckets privados**, columnas `_path`, y la ruta la arma
+    **una sola función** que pone el `tenant_id` primero, porque es lo que matchean las
+    policies. Nunca a mano.
+14. **Las URLs firmadas vencen**, y el vencimiento vive en un archivo, no en cada
+    llamada.
+15. **El dispositivo olvida.** La cola local se purga sola y se borra entera al cerrar
+    sesión. Un teléfono se pierde, se vende y se presta. **Y el logout tiene que
+    llamarlo**: ver el antipatrón "una regla escrita con una función que nadie llama".
+16. **Nada de PII en logs.** Ni teléfonos, ni nombres, ni documentos. Códigos e ids.
+17. **La credencial que saltea RLS nunca sale del servidor**, y hay un script que
+    busca seis formas de filtrar una y **corre en CI**.
+
+### La capa que el RLS da por sentada
+
+Todo lo de arriba asume que **el token de sesión no se robó**, y ese suele ser el
+único supuesto del modelo sin nada atrás. En un SPA el token vive en `localStorage`,
+donde lo lee cualquier script que corra en la página.
+
+Entonces el archivo de cabeceras es parte del modelo de seguridad, no del deploy:
+CSP estricta, HSTS con `includeSubDomains` si sos multi-tenant por subdominio,
+`frame-ancestors 'none'`, `base-uri 'none'`. Versionado en el repo, nunca en un panel,
+y **con un chequeo en CI que falle si no llegan**: una CSP que nadie mide dura hasta
+el primer deploy apurado.
+
+Corolario que sorprende: **self-hostear las fuentes es un prerequisito de la CSP.**
+Mientras el CSS venga de un CDN de terceros, la política tiene que abrir `style-src` y
+`font-src` a ese dominio, y ya no es estricta.
+
+Y cuatro cosas más que salieron de **medir la política en un navegador** en vez de
+leerla, la primera de las cuales ahorra una directiva:
+
+- **`style-src-attr 'unsafe-inline'` casi nunca hace falta.** Se pone por reflejo
+  porque los estilos dinámicos parecen inline. React los aplica con
+  `node.style.setProperty()`, que es CSSOM, y **la CSP no gobierna el CSSOM**: solo el
+  parseo de un atributo `style` literal en el HTML. Cerrala y medí; si tu framework no
+  escribe el atributo como texto, la política queda más ajustada gratis. El corolario
+  para el código que venga: `setAttribute('style', ...)` y `innerHTML` con estilos
+  funcionan en local y fallan en producción.
+- **Recorrer pantallas NO prueba `connect-src`**, que es la directiva que más importa,
+  porque es la que impide que un script inyectado mande los datos afuera. Si la app se
+  está construyendo contra un backend falso, cerrar `connect-src` por completo no rompe
+  ninguna pantalla y el chequeo pasa en verde. Probala a propósito y **en las dos
+  direcciones**: un dominio permitido que no dé violación, y uno ajeno que sí la dé.
+  Una política que bloquea todo también pasa la primera mitad del examen.
+- **`'unsafe-inline'` en `script-src` es invisible mientras haya un hash o un nonce**,
+  porque el navegador lo ignora (CSP2 en adelante). El recorrido pasa en verde con esa
+  palabra puesta, y el día que alguien saque el hash se despierta. Eso solo se ve
+  **leyendo el texto de la política**, así que va un lint además del recorrido.
+- **Un script inline habilitado por hash se desincroniza sola la primera vez que
+  alguien lo edita**, y el síntoma aparece solo en producción. El hash se recalcula del
+  build y se compara contra el declarado, en CI. Si no, es una promesa.
+
+### Consentimiento, si hay datos de personas
+
+- **Un checkbox obligatorio sin texto versionado no es un consentimiento informado:
+  es un campo booleano.** Guardá `politica_version` junto al `consentimiento_en`, o en
+  dos años no vas a poder contestar qué leyó esa persona.
+- **Los logs de acceso a datos sensibles son ellos mismos datos sensibles**, y crecen
+  para siempre. Necesitan una política de retención, y el número **lo decide el dueño
+  del producto o un abogado**, no la sesión.
+- **El derecho de acceso y el de supresión se escriben antes de que los pidan**, aunque
+  la respuesta de qué se borra y qué se guarda quede marcada como un default pendiente
+  de revisión legal. Escribirlo ahora es lo que hace que "no podemos hacer eso" nunca
+  sea la respuesta, y convierte una pregunta vaga en una concreta.
+- **Nunca inventes cumplimiento legal.** Describí la obligación como una pregunta a
+  verificar, nombrá la ley si la sabés, y pará ahí.
+
+---
+
+## 19. Auditar lo construido, no solo lo que falta
+
+Cada tanto conviene auditar el proyecto **de afuera**, con una plantilla que no sabe
+qué estabas tratando de hacer. El prompt reusable está en
+[`plantilla/AUDITORIA.md`](plantilla/AUDITORIA.md) y sirve igual para un sitio
+público que para una app privada.
+
+Lo que enseñó la primera pasada, en `Futbolapp`:
+
+- **Auditar contra la base no audita el navegador.** El proyecto tenía 108
+  comprobaciones de aislamiento, cuatro guards y una suite de sabotaje, y no tenía ni
+  una cabecera de seguridad. La auditoría fuerte de un lado esconde que del otro no
+  hay ninguna.
+- **Los peores hallazgos son pares partidos al medio**: el schema exige consentimiento
+  fechado y no existe el texto que se consiente; la regla dice que el teléfono olvida y
+  la función que olvida no la llama nadie. Ninguno de los dos lados se ve mal por
+  separado.
+- **Clasificar cada hallazgo en A (técnico) / B (decisión del dueño) / C (legal)**
+  cambia el reporte de una lista de deudas a un plan: lo A se hace, lo B se pregunta,
+  lo C se consulta. Y evita que la sesión invente una respuesta legal para no dejar un
+  renglón vacío.
+- **Escribí también lo que está bien.** Un reporte que solo lista problemas hace que
+  la próxima sesión "arregle" cosas que estaban puestas a propósito.
+
+---
+
+## 20. De dónde salió cada cosa
 
 Si una regla parece arbitraria, el contexto completo está en estos archivos.
 
@@ -1032,4 +1386,6 @@ Si una regla parece arbitraria, el contexto completo está en estos archivos.
 | `colegio-torneos` | Los mensajes de commit: la adopción de M3, la regresión de radios, el rediseño de filas de partido, la convención de ganó/empató/perdió |
 | `portfolio` | Los mensajes de commit: la auditoría de cascada, los cuatro bugs de mobile, la pasada de densidad y accesibilidad, la auditoría de alineación y SEO. `DECISIONS.md`: por qué mide visitas |
 | `QR-code` | El README: cómo se explica un producto por su arquitectura ("cortá internet y probá") en vez de por una promesa |
+| `carnalmeats` | `DECISIONS.md` (D-001 a D-017), `docs/DESIGN.md` (contrastes y bundle medidos), `supabase/test/` (RLS contra Postgres), `tests/e2e/` (pagos y panel), `docs/PUESTA-EN-MARCHA.md` |
+| `Futbolapp` | `docs/SEGURIDAD.md` (los siete agujeros y cómo se midieron), `supabase/tests/rls.sql` (los helpers de aserción), `scripts/db-test-mordida.sh` (los 26 sabotajes), `docs/AUDITORIA_PRODUCTO.md` (la auditoría de afuera), `docs/AUDITORIA_SPEC.md` (auditar el spec antes de escribir código) |
 | `Hangar8` | `DECISIONS.md` (D-01 el benchmark de EE.UU., D-06 placeholders, D-09 el preview demonio, D-15 fuentes y CLS), `docs/DESIGN.md` (ritmo vertical, alineación, rendimiento medido), `scripts/check.mjs` (el chequeo de alineación), `docs/PARA_EL_TALLER.md` |
