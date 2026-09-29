@@ -38,7 +38,7 @@ servicios, cierre. Botón de WhatsApp con mensaje precargado del servicio.
 | Años de oficio | Stats | **Placeholder** |
 | Puntaje en Google | Stats | **Placeholder**, requiere Google Business |
 | Reseñas de clientes | Reseñas | **Placeholder** |
-| Logos de aseguradoras | Seguros | **Placeholder**, requiere confirmación |
+| Aseguradoras (nombres) | Seguros | **Placeholder**, requiere confirmación; logos solo con permiso de cada compañía |
 | Fotos de trabajos antes/después | Galería | **Placeholder** |
 | Garantía del trabajo | (no está) | Preguntar: si existe, sumar a la tira del hero |
 

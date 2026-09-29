@@ -128,7 +128,7 @@ Si creés que algo de esta lista hace falta, decilo antes de implementarlo.
 
 ## 9. Fase actual
 
-**Fase 1, sitio publicable con placeholders. Hecha.** Ver `PROGRESS.md`.
+**Fase 1, sitio publicable con placeholders. Hecha**, incluida la página de seguros, las imágenes para compartir, Lighthouse en 100 y el chequeo en GitHub. Ver `PROGRESS.md`.
 
 **La próxima es la fase 2**: reemplazar placeholders con datos reales, dominio, deploy
 y Google Business Profile. Se arranca cuando lleguen los datos del taller.

@@ -101,7 +101,6 @@ caché como Vercel, Lighthouse 13). Última medición: fase 1, con placeholders.
 | Lighthouse, las 4 categorías | 100 | 100 en las 6 mediciones |
 | CLS | 0 | 0 |
 
-
 | Página | Perfil | Rendimiento | Accesibilidad | Buenas prácticas | SEO | FCP | LCP | CLS | TBT |
 |---|---|---|---|---|---|---|---|---|---|
 | `/` | celular | 100 | 100 | 100 | 100 | 0.9 s | 1.5 s | 0 | 20 ms |
