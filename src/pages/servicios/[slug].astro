@@ -7,6 +7,7 @@ import Steps from '../../components/site/Steps.astro';
 import PageHero from '../../components/site/PageHero.astro';
 import Icon from '../../components/ui/Icon.astro';
 import { areas, business, services, type Service } from '../../data/site';
+import { path } from '../../lib/path';
 import Base from '../../layouts/Base.astro';
 
 export function getStaticPaths() {
@@ -17,7 +18,7 @@ interface Props {
   service: Service;
 }
 const { service } = Astro.props;
-const url = new URL(`/servicios/${service.slug}/`, Astro.site).toString();
+const url = new URL(path(`/servicios/${service.slug}/`), Astro.site).toString();
 
 const schema = [
   {
@@ -26,14 +27,14 @@ const schema = [
     serviceType: service.name,
     description: service.intro,
     url,
-    provider: { '@id': new URL('/#taller', Astro.site).toString() },
+    provider: { '@id': new URL(path('/#taller'), Astro.site).toString() },
     areaServed: areas.map((name) => ({ '@type': 'City', name })),
   },
   {
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site).toString() },
-      { '@type': 'ListItem', position: 2, name: 'Servicios', item: new URL('/#servicios', Astro.site).toString() },
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL(path('/'), Astro.site).toString() },
+      { '@type': 'ListItem', position: 2, name: 'Servicios', item: new URL(path('/#servicios'), Astro.site).toString() },
       { '@type': 'ListItem', position: 3, name: service.name, item: url },
     ],
   },
@@ -45,6 +46,7 @@ const schema = [
   description={`${service.intro.split('. ')[0]}. ${business.name}, ${business.address.street}, ${business.address.city}.`}
   whatsappText={service.whatsappText}
   schema={schema}
+  ogImage={service.slug}
 >
   <PageHero
     eyebrow={`Servicio en ${business.address.city}`}

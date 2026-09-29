@@ -1,7 +1,8 @@
 # Diseño: Hangar 8
 
-Tokens en `src/styles/global.css`. Nunca un hex fuera de ese archivo (el favicon
-SVG es la única excepción, porque no puede leer variables CSS).
+Tokens en `src/styles/global.css`. Nunca un hex fuera de ese archivo. Excepciones,
+porque se dibujan fuera del sitio y no pueden leer variables CSS: el favicon SVG y
+la plantilla de `scripts/og.mjs`, que repite los mismos valores.
 
 ## Marca
 

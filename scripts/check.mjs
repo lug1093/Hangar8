@@ -73,6 +73,17 @@ try {
         );
         if (small.length) problems.push(`${tag} áreas < 24px: ${small.join('; ')}`);
 
+        // Cada página comparte una imagen que existe de verdad en el build.
+        if (width === 390 && scheme === 'light') {
+          const og = await page.getAttribute('meta[property="og:image"]', 'content');
+          const file = og && join('dist', new URL(og).pathname.replace(/^\/Hangar8/, ''));
+          try {
+            if (!file || !(await stat(file)).isFile()) throw new Error();
+          } catch {
+            problems.push(`${tag} sin imagen para compartir: ${og}`);
+          }
+        }
+
         // Alineación: en cada grilla marcada con data-align-group, las celdas de una
         // misma fila tienen que tener sus marcas data-align="top|bottom" a la misma altura.
         const misaligned = await page.evaluate(() => {

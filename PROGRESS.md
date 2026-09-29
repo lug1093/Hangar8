@@ -12,6 +12,7 @@
 - [x] Contrastes medidos en `docs/DESIGN.md`
 - [x] Página `/seguros/` con el trámite, checklist y dudas frecuentes (D-12)
 - [x] URLs con barra final unificadas (D-11); `llms.txt` y `robots.txt` generados desde los datos (D-13)
+- [x] Imágenes para compartir por página y ícono del teléfono (`npm run og`, D-14); el chequeo verifica que existan
 - [x] Revisión de alineación y espacios: stats alineadas, ritmo vertical único, chequeo automático de alineación (ver `docs/DESIGN.md`)
 
 ## Datos pendientes del taller (fase 2)
@@ -33,7 +34,7 @@ Todo esto está en `src/data/site.ts`:
 
 1. Cargar los datos de arriba a medida que lleguen.
 2. Deploy en Vercel + dominio.
-3. Imagen Open Graph (con logo real) para cuando se comparte el link por WhatsApp.
+3. Con el logo real: reemplazar la insignia en `Logo.astro` y en `scripts/og.mjs`, y correr `npm run og`.
 
 ## Para la próxima sesión
 

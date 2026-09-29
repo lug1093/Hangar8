@@ -29,6 +29,7 @@ jobs:
       - run: npm run build
         env:
           ASTRO_BASE: /Hangar8
+          ASTRO_SITE: https://lug1093.github.io
           PUBLIC_PREVIEW: 'true'
       - uses: actions/configure-pages@v5
         with:

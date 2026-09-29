@@ -12,11 +12,13 @@ interface Props {
   whatsappText?: string;
   /** Datos estructurados propios de la página (FAQPage, Service, BreadcrumbList). */
   schema?: Record<string, unknown>[];
+  /** Imagen para compartir, generada con `npm run og` en public/og/. */
+  ogImage?: string;
 }
 
-const { title, description, whatsappText, schema = [] } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const canonical = new URL(Astro.url.pathname.slice(base.length) || '/', Astro.site);
+const { title, description, whatsappText, schema = [], ogImage = 'inicio' } = Astro.props;
+const ogImageUrl = new URL(path(`/og/${ogImage}.png`), Astro.site).toString();
+const canonical = new URL(Astro.url.pathname, Astro.site);
 // La vista previa no se indexa: tiene placeholders y duplicaría el sitio real.
 const noindex = import.meta.env.PUBLIC_PREVIEW === 'true';
 
@@ -24,7 +26,7 @@ const noindex = import.meta.env.PUBLIC_PREVIEW === 'true';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'AutoBodyShop',
-  '@id': new URL('/#taller', Astro.site).toString(),
+  '@id': new URL(path('/#taller'), Astro.site).toString(),
   name: business.name,
   description: business.description,
   telephone: business.phoneHref.replace('tel:', ''),
@@ -39,6 +41,8 @@ const jsonLd = {
   openingHours: business.hours.schema,
   hasMap: business.mapsHref,
   sameAs: business.social.map((s) => s.href),
+  image: ogImageUrl,
+  logo: new URL(path('/apple-touch-icon.png'), Astro.site).toString(),
   areaServed: areas.map((name) => ({ '@type': 'City', name })),
   priceRange: '$$',
 };
@@ -54,12 +58,19 @@ const jsonLd = {
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" href={path('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={path('/apple-touch-icon.png')} />
     <meta name="theme-color" content="#0e0f11" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_AR" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${business.name}, ${business.tagline.toLowerCase()} en ${business.address.city}`} />
+    <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     {schema.map((item) => <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...item })} />)}
   </head>

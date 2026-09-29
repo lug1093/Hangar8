@@ -8,9 +8,10 @@ import SectionHeading from '../components/site/SectionHeading.astro';
 import Steps from '../components/site/Steps.astro';
 import Icon from '../components/ui/Icon.astro';
 import { areas, business, insurance } from '../data/site';
+import { path } from '../lib/path';
 import Base from '../layouts/Base.astro';
 
-const url = new URL('/seguros/', Astro.site).toString();
+const url = new URL(path('/seguros/'), Astro.site).toString();
 
 const schema = [
   {
@@ -19,7 +20,7 @@ const schema = [
     serviceType: 'Reparación de carrocería por siniestro',
     description: insurance.intro,
     url,
-    provider: { '@id': new URL('/#taller', Astro.site).toString() },
+    provider: { '@id': new URL(path('/#taller'), Astro.site).toString() },
     areaServed: areas.map((name) => ({ '@type': 'City', name })),
   },
   {
@@ -29,7 +30,7 @@ const schema = [
   {
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site).toString() },
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL(path('/'), Astro.site).toString() },
       { '@type': 'ListItem', position: 2, name: 'Seguros', item: url },
     ],
   },
@@ -41,6 +42,7 @@ const schema = [
   description={`Trabajamos con todas las compañías de seguro. Te acompañamos en el trámite del siniestro y reparamos tu auto en ${business.address.street}, ${business.address.city}.`}
   whatsappText={insurance.whatsappText}
   schema={schema}
+  ogImage="seguros"
 >
   <PageHero
     eyebrow="Trabajamos con todas las compañías"

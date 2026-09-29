@@ -122,3 +122,16 @@ Ya no son archivos fijos en `public/`: se generan en el build desde
 `src/data/site.ts` (`src/pages/llms.txt.ts`, `src/pages/robots.txt.ts`). El
 `llms.txt` fijo repetía teléfono, dirección y servicios a mano, que es exactamente
 como el NAP termina distinto entre la web y lo que leen los asistentes (regla 5).
+
+## D-14. Imágenes para compartir, generadas y commiteadas
+
+El link del sitio se va a mandar sobre todo por WhatsApp, y sin imagen de Open
+Graph se ve como un link cualquiera. `npm run og` dibuja una imagen por página
+(portada, seguros y cada servicio) con Chromium, las tipografías del sitio y los
+datos de `src/data/site.ts`, y las deja en `public/og/`; también el
+`apple-touch-icon.png`. Se commitean en vez de generarse en el build para no
+depender de Chromium en el deploy. **Hay que volver a correrlo** si cambia el
+teléfono, la dirección, un servicio o llega el logo real.
+
+Para que la vista previa muestre la imagen, su build usa `ASTRO_SITE`
+(`https://lug1093.github.io`): og:image tiene que ser una URL absoluta que exista.

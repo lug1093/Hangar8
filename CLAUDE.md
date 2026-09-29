@@ -69,6 +69,7 @@ src/
   pages/                # index, seguros, servicios/[slug], 404, llms.txt.ts, robots.txt.ts
 public/                 # favicon, imágenes para compartir
 scripts/check.mjs       # chequeo de cierre
+scripts/og.mjs          # imágenes para compartir (npm run og, se commitean)
 ```
 
 **Regla dura**: ningún componente escribe un teléfono, una dirección, un horario ni

@@ -1,10 +1,11 @@
 import type { APIRoute } from 'astro';
 import { areas, business, faqs, insurance, services } from '../data/site';
+import { path } from '../lib/path';
 
 // Resumen del taller para asistentes de IA (llmstxt.org). Sale de los mismos datos
 // que la web: nombre, dirección y teléfono no pueden quedar distintos (regla 5).
 export const GET: APIRoute = ({ site }) => {
-  const url = (p: string) => new URL(p, site).toString();
+  const url = (p: string) => new URL(path(p), site).toString();
   const { address } = business;
   const body = `# ${business.name}
 
