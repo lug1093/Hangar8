@@ -1,10 +1,12 @@
-# Vista previa en GitHub Pages mientras no haya deploy en Vercel (DECISIONS.md, D-10).
-# Se publica con noindex para que Google no la tome por el sitio real.
+# Chequeo en cada push y vista previa en GitHub Pages mientras no haya deploy en
+# Vercel (DECISIONS.md, D-10 y D-16). La vista previa se publica solo si el
+# chequeo pasa, y con noindex para que Google no la tome por el sitio real.
 name: Vista previa
 
 on:
   push:
     branches: [main, claude/hangar-8-institutional-site-d6mgdr]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -13,11 +15,34 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Chromium para el chequeo
+        run: |
+          npx playwright-core install --with-deps chromium
+          echo "CHROMIUM_PATH=$(node -e "import('playwright-core').then(m => console.log(m.chromium.executablePath()))")" >> "$GITHUB_ENV"
+      - run: npm run check
+      - name: Capturas del chequeo
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturas
+          path: .checks/
+
   build:
+    needs: check
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,8 +57,6 @@ jobs:
           ASTRO_SITE: https://lug1093.github.io
           PUBLIC_PREVIEW: 'true'
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

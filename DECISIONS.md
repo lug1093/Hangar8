@@ -146,3 +146,16 @@ latin) y el CSS, que pesa 6,5 KB gzip, va adentro del HTML
 pedido. Resultado: CLS 0 y 100 en las cuatro categorías. Se sacó además el peso
 600 de Barlow, que no usaba ningún componente. **Costo**: el CSS se repite en cada
 página en vez de cachearse; con 7 páginas y 6,5 KB no vale la pena lo contrario.
+
+## D-16. El chequeo corre en GitHub antes de publicar
+
+`npm run check` corría solo en esta máquina. Ahora corre en cada push y en cada
+pull request, con el Chromium que instala `playwright-core`, y la vista previa se
+publica solo si pasa. Si falla, las capturas quedan como artefacto del run
+("capturas"). Es la red para cuando se carguen fotos, reseñas o textos nuevos: un
+texto largo que rompe una grilla a 320px no llega a publicarse.
+
+`vercel.json` deja listos el deploy definitivo: barra final con redirección
+(D-11), caché larga para `/_astro/` (los archivos llevan hash) y encabezados de
+seguridad básicos. No lleva CSP: el mapa embebido y los scripts inline la
+complicarían sin un beneficio proporcional para un sitio sin formularios.
