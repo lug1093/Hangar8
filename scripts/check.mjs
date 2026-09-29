@@ -1,40 +1,21 @@
 // Chequeo de cierre para un sitio institucional (playbook, sección 12):
-// levanta su propio preview en un puerto libre, recorre cada página en varios
+// levanta su propio servidor (scripts/serve.mjs), recorre cada página en varios
 // anchos y en los dos temas, corre axe, mide desborde horizontal y áreas táctiles,
 // guarda capturas en .checks/ y baja el servidor al terminar.
 import { mkdirSync } from 'node:fs';
-import { readFile, stat } from 'node:fs/promises';
-import { createServer } from 'node:http';
-import { extname, join, normalize } from 'node:path';
+import { stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
+import { serveDist } from './serve.mjs';
 
 const pages = ['/', '/seguros/', '/servicios/chapa-y-pintura/', '/servicios/sacabollo/', '/servicios/mecanica-integral/', '/servicios/reparaciones/', '/404'];
 const widths = [320, 390, 768, 1024, 1280];
 const schemes = ['light', 'dark'];
 const executablePath = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
-// Servidor estático propio sobre dist/, en un puerto libre. No se usa
-// `astro preview`: en Astro 7 queda corriendo como demonio y una segunda corrida
-// mide contra el build anterior sin avisar (playbook, sección 12, regla 4).
-const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain' };
-const server = createServer(async (req, res) => {
-  const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  const candidates = [url, `${url}.html`, join(url, 'index.html')];
-  for (const c of candidates) {
-    const file = join('dist', normalize(c));
-    try {
-      if ((await stat(file)).isFile()) {
-        res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream' });
-        return res.end(await readFile(file));
-      }
-    } catch {}
-  }
-  res.writeHead(404, { 'content-type': types['.html'] });
-  res.end(await readFile('dist/404.html'));
-});
-await new Promise((r) => server.listen(0, '127.0.0.1', r));
-const base = `http://127.0.0.1:${server.address().port}`;
+const server = await serveDist();
+const { base } = server;
 
 mkdirSync('.checks', { recursive: true });
 const browser = await chromium.launch({ executablePath });

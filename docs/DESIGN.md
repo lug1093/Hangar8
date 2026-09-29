@@ -87,3 +87,29 @@ Un solo juego de espacios, en la escala de 4px:
 - Los títulos grandes usan `text-wrap: balance` para no dejar una palabra sola.
 - Servicios en 4 columnas recién desde 1280px: en 1024 "Mecánica integral" ocupaba
   dos líneas y desfasaba las descripciones.
+
+## Rendimiento
+
+Medido con `npm run lighthouse` (build de producción, servidor propio con gzip y
+caché como Vercel, Lighthouse 13). Última medición: fase 1, con placeholders.
+
+| Métrica | Objetivo | Medido |
+|---|---|---|
+| JS del cliente | < 5 KB | 0,6 KB (menú y barra del teléfono, inline) |
+| HTML de la portada | | 15,8 KB gzip, con el CSS adentro |
+| Fuentes de la primera pantalla | | 70 KB (Inter latin + Barlow Condensed 700 latin), precargadas |
+| Lighthouse, las 4 categorías | 100 | 100 en las 6 mediciones |
+| CLS | 0 | 0 |
+
+
+| Página | Perfil | Rendimiento | Accesibilidad | Buenas prácticas | SEO | FCP | LCP | CLS | TBT |
+|---|---|---|---|---|---|---|---|---|---|
+| `/` | celular | 100 | 100 | 100 | 100 | 0.9 s | 1.5 s | 0 | 20 ms |
+| `/` | desktop | 100 | 100 | 100 | 100 | 0.2 s | 0.4 s | 0 | 0 ms |
+| `/seguros/` | celular | 100 | 100 | 100 | 100 | 0.7 s | 1.4 s | 0 | 0 ms |
+| `/seguros/` | desktop | 100 | 100 | 100 | 100 | 0.2 s | 0.3 s | 0 | 0 ms |
+| `/servicios/chapa-y-pintura/` | celular | 100 | 100 | 100 | 100 | 0.7 s | 1.4 s | 0 | 0 ms |
+| `/servicios/chapa-y-pintura/` | desktop | 100 | 100 | 100 | 100 | 0.2 s | 0.3 s | 0 | 0 ms |
+
+Cuando lleguen las fotos de la galería, volver a medir: son lo que más puede mover
+estos números. Van con `width`/`height`, `loading="lazy"` y en WebP o AVIF.

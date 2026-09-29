@@ -13,6 +13,7 @@
 - [x] Página `/seguros/` con el trámite, checklist y dudas frecuentes (D-12)
 - [x] URLs con barra final unificadas (D-11); `llms.txt` y `robots.txt` generados desde los datos (D-13)
 - [x] Imágenes para compartir por página y ícono del teléfono (`npm run og`, D-14); el chequeo verifica que existan
+- [x] Lighthouse: 100 en rendimiento, accesibilidad, buenas prácticas y SEO, celular y desktop, CLS 0 (`npm run lighthouse`, D-15)
 - [x] Revisión de alineación y espacios: stats alineadas, ritmo vertical único, chequeo automático de alineación (ver `docs/DESIGN.md`)
 
 ## Datos pendientes del taller (fase 2)
@@ -39,6 +40,8 @@ Todo esto está en `src/data/site.ts`:
 ## Para la próxima sesión
 
 - `npm run check` construye y chequea todo; capturas en `.checks/`.
+- `npm run lighthouse` mide y deja la tabla en `.checks/lighthouse.md` para pegar en `docs/DESIGN.md`.
+- `npm run og` regenera las imágenes para compartir.
 - En este entorno Google está bloqueado: el mapa se ve vacío en las capturas, con
   la dirección como respaldo. En un navegador real carga.
 - No usar `astro preview` para medir (D-09).

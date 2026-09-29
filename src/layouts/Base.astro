@@ -1,6 +1,10 @@
 ---
 import { path } from '../lib/path';
 import '../styles/global.css';
+// Solo los dos archivos que usa la primera pantalla (latin): precargarlos evita
+// el salto de layout cuando llegan las fuentes (Lighthouse, CLS; ver D-15).
+import displayFont from '@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2?url';
+import sansFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import { areas, business } from '../data/site';
 import Footer from '../components/site/Footer.astro';
 import Header from '../components/site/Header.astro';
@@ -57,6 +61,8 @@ const jsonLd = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preload" href={sansFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href={path('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={path('/apple-touch-icon.png')} />
     <meta name="theme-color" content="#0e0f11" />

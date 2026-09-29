@@ -135,3 +135,14 @@ teléfono, la dirección, un servicio o llega el logo real.
 
 Para que la vista previa muestre la imagen, su build usa `ASTRO_SITE`
 (`https://lug1093.github.io`): og:image tiene que ser una URL absoluta que exista.
+
+## D-15. Fuentes precargadas y CSS adentro del HTML
+
+La primera medición de Lighthouse dio 99 con CLS 0,071 en las páginas de servicio:
+el texto aparecía con la fuente del sistema y saltaba al llegar Inter y Barlow
+Condensed. Se precargan los dos archivos que usa la primera pantalla (subset
+latin) y el CSS, que pesa 6,5 KB gzip, va adentro del HTML
+(`inlineStylesheets: 'always'`), así la primera pantalla no espera un segundo
+pedido. Resultado: CLS 0 y 100 en las cuatro categorías. Se sacó además el peso
+600 de Barlow, que no usaba ningún componente. **Costo**: el CSS se repite en cada
+página en vez de cachearse; con 7 páginas y 6,5 KB no vale la pena lo contrario.

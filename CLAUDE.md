@@ -70,6 +70,8 @@ src/
 public/                 # favicon, imágenes para compartir
 scripts/check.mjs       # chequeo de cierre
 scripts/og.mjs          # imágenes para compartir (npm run og, se commitean)
+scripts/lighthouse.mjs  # medición (npm run lighthouse)
+scripts/serve.mjs       # servidor propio de dist/ para check y lighthouse
 ```
 
 **Regla dura**: ningún componente escribe un teléfono, una dirección, un horario ni

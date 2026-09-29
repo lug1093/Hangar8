@@ -12,6 +12,9 @@ export default defineConfig({
   base: process.env.ASTRO_BASE ?? '/',
   // Links, canonical y sitemap con la misma forma: /servicios/sacabollo/ (D-11).
   trailingSlash: 'always',
+  // El CSS entero pesa 6,5 KB gzip: va adentro del HTML y la primera pantalla no
+  // espera un segundo pedido (D-15).
+  build: { inlineStylesheets: 'always' },
   integrations: [sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

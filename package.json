@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro build && node scripts/check.mjs",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "lighthouse": "astro build && node scripts/lighthouse.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
+    "lighthouse": "^13.5.0",
     "playwright-core": "^1.63.0"
   }
 }
