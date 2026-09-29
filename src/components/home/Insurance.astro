@@ -1,13 +1,11 @@
 ---
-import { SHOW_PLACEHOLDERS } from '../../config/flags';
-import { business, insurers } from '../../data/site';
+import { business, insurance } from '../../data/site';
+import { path } from '../../lib/path';
+import InsurerLogos from '../site/InsurerLogos.astro';
 import Section from '../site/Section.astro';
 import SectionHeading from '../site/SectionHeading.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
-import PlaceholderTag from '../ui/PlaceholderTag.astro';
-
-const showInsurerSlots = insurers.length === 0 && SHOW_PLACEHOLDERS;
 
 const points = [
   'Trabajamos con todas las compañías de seguro',
@@ -38,37 +36,18 @@ const points = [
         }
       </ul>
       <Button
-        href={business.whatsappHref('Hola Hangar 8, tuve un choque y quiero hacer la reparación por el seguro.')}
+        href={business.whatsappHref(insurance.whatsappText)}
         external
         variant="secondary-ink"
         class="mt-8 w-full"
       >
         <Icon name="message-circle" size={18} />Consultar por mi siniestro
       </Button>
+      <a href={path('/seguros/')} class="mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 text-[15px] font-medium text-on-ink underline-offset-4 hover:underline">
+        Cómo es el trámite con el seguro <Icon name="arrow-right" size={16} />
+      </a>
     </div>
   </div>
 
-  {
-    insurers.length > 0 && (
-      <ul aria-label="Algunas de las compañías con las que trabajamos" class="mt-8 flex flex-wrap gap-2">
-        {insurers.map((name) => (
-          <li class="rounded-[var(--radius-btn)] border border-ink-line px-4 py-2 text-[15px]">{name}</li>
-        ))}
-      </ul>
-    )
-  }
-  {
-    showInsurerSlots && (
-      <div class="mt-8">
-        <p class="mb-3 flex items-center gap-2 text-sm text-on-ink-2">
-          Logos de las aseguradoras <PlaceholderTag tone="ink" />
-        </p>
-        <ul class="grid grid-cols-3 gap-2 md:grid-cols-6" aria-hidden="true">
-          {Array.from({ length: 6 }).map(() => (
-            <li class="h-14 rounded-[var(--radius-btn)] border border-dashed border-ink-line" />
-          ))}
-        </ul>
-      </div>
-    )
-  }
+  <InsurerLogos tone="ink" class="mt-8" />
 </Section>

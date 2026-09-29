@@ -1,0 +1,39 @@
+---
+// Aseguradoras confirmadas por el taller (regla 2). Mientras no haya ninguna, un
+// espacio marcado como ejemplo, que desaparece con SHOW_PLACEHOLDERS apagado.
+import { SHOW_PLACEHOLDERS } from '../../config/flags';
+import { insurers } from '../../data/site';
+import PlaceholderTag from '../ui/PlaceholderTag.astro';
+
+interface Props {
+  tone?: 'default' | 'ink';
+  class?: string;
+}
+const { tone = 'default', class: className } = Astro.props;
+const ink = tone === 'ink';
+const showSlots = insurers.length === 0 && SHOW_PLACEHOLDERS;
+---
+
+{
+  insurers.length > 0 && (
+    <ul aria-label="Algunas de las compañías con las que trabajamos" class:list={['flex flex-wrap gap-2', className]}>
+      {insurers.map((name) => (
+        <li class:list={['rounded-[var(--radius-btn)] border px-4 py-2 text-[15px]', ink ? 'border-ink-line' : 'border-line']}>{name}</li>
+      ))}
+    </ul>
+  )
+}
+{
+  showSlots && (
+    <div class={className}>
+      <p class:list={['mb-3 flex items-center gap-2 text-sm', ink ? 'text-on-ink-2' : 'text-text-2']}>
+        Logos de las aseguradoras <PlaceholderTag tone={tone} />
+      </p>
+      <ul class="grid grid-cols-3 gap-2 md:grid-cols-6" aria-hidden="true">
+        {Array.from({ length: 6 }).map(() => (
+          <li class:list={['h-14 rounded-[var(--radius-btn)] border border-dashed', ink ? 'border-ink-line' : 'border-edge']} />
+        ))}
+      </ul>
+    </div>
+  )
+}

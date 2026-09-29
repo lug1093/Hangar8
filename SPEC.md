@@ -17,6 +17,7 @@ distinto por página.)
 | Ruta | Contenido |
 |---|---|
 | `/` | Hero, números, servicios, retiro a domicilio, cómo trabajamos, seguros, galería, reseñas, preguntas frecuentes, contacto con mapa, cierre |
+| `/seguros/` | Reparación por seguro: qué tener a mano, el trámite en 4 pasos, logos de aseguradoras, dudas frecuentes |
 | `/servicios/chapa-y-pintura` | Página del servicio principal |
 | `/servicios/sacabollo` | |
 | `/servicios/mecanica-integral` | |
@@ -49,7 +50,7 @@ servicios, cierre. Botón de WhatsApp con mensaje precargado del servicio.
 - `canonical`, Open Graph, `lang="es-AR"`, sitemap, `robots.txt`.
 - JSON-LD: `AutoBodyShop` (dirección, teléfono, horario, zonas, redes) en todas;
   `FAQPage` en la portada; `Service` y `BreadcrumbList` en cada servicio.
-- `llms.txt` con el resumen del taller para asistentes de IA.
+- `llms.txt` con el resumen del taller, servicios y preguntas frecuentes para asistentes de IA, generado desde los mismos datos que la web.
 - Fuentes self-hosted, sin JS de terceros salvo el mapa (carga diferida).
 
 **Fuera del código (lo que más mueve la aguja en SEO local)**

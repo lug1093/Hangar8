@@ -64,10 +64,10 @@ src/
   lib/path.ts           # links internos: siempre path("/..."), nunca "/..." suelto
   layouts/Base.astro    # <head>, SEO, JSON-LD, header, footer, barra móvil
   components/ui/        # primitivas: Button, Icon, PlaceholderTag
-  components/site/      # compartidos entre páginas: Header, Footer, Section, ServiceGrid, Steps, CtaBand
+  components/site/      # compartidos entre páginas: Header, Footer, Section, PageHero, ServiceGrid, Steps, Faq, InsurerLogos, CtaBand
   components/home/      # secciones de la portada
-  pages/                # index, servicios/[slug], 404
-public/                 # favicon, robots.txt, llms.txt
+  pages/                # index, seguros, servicios/[slug], 404, llms.txt.ts, robots.txt.ts
+public/                 # favicon, imágenes para compartir
 scripts/check.mjs       # chequeo de cierre
 ```
 
@@ -100,7 +100,7 @@ cambio de color.
    `SHOW_PLACEHOLDERS`. Un taller que miente en su web pierde lo único que vende.
 2. **No nombrar aseguradoras ni poner sus logos sin confirmación del taller.**
 3. **WhatsApp a un toque desde cualquier pantalla del teléfono.**
-4. **Cada servicio tiene su página** (`/servicios/<slug>`) con su título y su
+4. **Cada servicio tiene su página** (`/servicios/<slug>/`, y `/seguros/`) con su título y su
    descripción: es lo que posiciona en Google.
 5. **Los datos de contacto son iguales en todos lados** (web, JSON-LD, `llms.txt`,
    Google Business, Instagram). Nombre, dirección y teléfono idénticos: es la base

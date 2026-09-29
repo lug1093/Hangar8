@@ -1,10 +1,21 @@
 ---
-import { steps } from '../../data/site';
+import { steps as defaultSteps } from '../../data/site';
+
+interface Props {
+  items?: { title: string; body: string }[];
+}
+const { items = defaultSteps } = Astro.props;
 ---
 
-<ol data-align-group="pasos" class="grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line md:grid-cols-3">
+<ol
+  data-align-group="pasos"
+  class:list={[
+    'grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line',
+    items.length === 4 ? 'sm:grid-cols-2 xl:grid-cols-4' : 'md:grid-cols-3',
+  ]}
+>
   {
-    steps.map((step, i) => (
+    items.map((step, i) => (
       <li class="bg-bg p-5 md:p-6">
         <span class="display block text-[52px] leading-none text-accent" aria-hidden="true">
           {String(i + 1).padStart(2, '0')}

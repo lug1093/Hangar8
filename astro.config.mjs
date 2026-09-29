@@ -8,6 +8,8 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://hangar8.com.ar',
   base: process.env.ASTRO_BASE ?? '/',
+  // Links, canonical y sitemap con la misma forma: /servicios/sacabollo/ (D-11).
+  trailingSlash: 'always',
   integrations: [sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

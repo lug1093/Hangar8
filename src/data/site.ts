@@ -145,9 +145,62 @@ export const faqs = [
   },
 ];
 
+// --- Seguros -----------------------------------------------------------------
+// Información general del trámite en Argentina, sin prometer nada que dependa de
+// una póliza puntual. Lo que el taller todavía tiene que confirmar está en D-12.
+
+export const insurance = {
+  intro:
+    'Si chocaste y tenés seguro, la reparación puede ir por tu compañía. Trabajamos con todas las compañías de seguro: vos nos pasás los datos y nosotros coordinamos con la aseguradora.',
+  checklist: [
+    'Patente, marca y modelo del auto',
+    'Compañía de seguro y número de póliza',
+    'Número de siniestro, si ya hiciste la denuncia',
+    'Fotos del daño y del auto entero',
+    'Si el choque fue con otro auto: los datos del otro conductor y de su seguro',
+  ],
+  steps: [
+    {
+      title: 'Avisale a tu seguro',
+      body: 'Hacé la denuncia del siniestro por la app, la web o tu productor. Hacelo cuanto antes: las pólizas piden avisar dentro de los 3 días.',
+    },
+    {
+      title: 'Mandanos los datos',
+      body: 'Por WhatsApp, con las fotos del daño. Con eso armamos el presupuesto para la compañía.',
+    },
+    {
+      title: 'Coordinamos todo',
+      body: 'Presentamos el presupuesto y seguimos la autorización. Si la compañía pide inspeccionar el auto, lo coordinamos.',
+    },
+    {
+      title: 'Reparación y entrega',
+      body: 'Con la autorización, arrancamos. Te avisamos cuando está listo, o te lo llevamos a domicilio.',
+    },
+  ],
+  faqs: [
+    {
+      q: '¿Con qué compañías trabajan?',
+      a: 'Con todas las compañías de seguro. Escribinos con el nombre de la tuya y arrancamos.',
+    },
+    {
+      q: '¿Tengo que pagar algo?',
+      a: 'Depende de tu póliza. Si tiene franquicia, esa parte la cubrís vos, y el resto lo cubre la compañía según lo que autorice. Antes de arrancar te confirmamos qué cubre y qué no.',
+    },
+    {
+      q: '¿Y si el choque fue culpa del otro auto?',
+      a: 'En ese caso el reclamo va al seguro del otro auto. Pasanos los datos del otro conductor y de su compañía, y lo coordinamos con la compañía que corresponda.',
+    },
+    {
+      q: '¿Cuánto tarda?',
+      a: 'Depende del daño y de lo que tarde la compañía en autorizar la reparación. Te vamos avisando en cada paso.',
+    },
+  ],
+  whatsappText: 'Hola Hangar 8, tuve un choque y quiero hacer la reparación por el seguro.',
+};
+
 export const nav = [
   { label: 'Servicios', href: '/#servicios' },
-  { label: 'Seguros', href: '/#seguros' },
+  { label: 'Seguros', href: '/seguros/' },
   { label: 'Cómo trabajamos', href: '/#como-trabajamos' },
   { label: 'Contacto', href: '/#contacto' },
 ];

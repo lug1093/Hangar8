@@ -1,17 +1,24 @@
 ---
 // <details> nativo: teclado, foco y estado expandido sin JavaScript.
-import { faqs } from '../../data/site';
-import Section from '../site/Section.astro';
-import SectionHeading from '../site/SectionHeading.astro';
+import { faqs as defaultFaqs } from '../../data/site';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
 import Icon from '../ui/Icon.astro';
+
+interface Props {
+  items?: { q: string; a: string }[];
+  title?: string;
+  tone?: 'default' | 'surface';
+}
+const { items = defaultFaqs, title = 'Lo que más nos preguntan', tone = 'default' } = Astro.props;
 ---
 
-<Section id="preguntas" labelledby="faq-title">
+<Section id="preguntas" tone={tone} labelledby="faq-title">
   <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-12">
-    <SectionHeading flush id="faq-title" eyebrow="Preguntas frecuentes" title="Lo que más nos preguntan" />
+    <SectionHeading flush id="faq-title" eyebrow="Preguntas frecuentes" title={title} />
     <div class="divide-y divide-line border-y border-line">
       {
-        faqs.map((f) => (
+        items.map((f) => (
           <details class="group">
             <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-4 text-lg font-medium leading-7 [&::-webkit-details-marker]:hidden">
               {f.q}

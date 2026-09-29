@@ -10,6 +10,8 @@
 - [x] Placeholders marcados y apagables (`src/config/flags.ts`)
 - [x] `npm run check`: axe WCAG 2.2 AA, desborde a 320/390/768/1280, áreas táctiles, claro y oscuro, menú
 - [x] Contrastes medidos en `docs/DESIGN.md`
+- [x] Página `/seguros/` con el trámite, checklist y dudas frecuentes (D-12)
+- [x] URLs con barra final unificadas (D-11); `llms.txt` y `robots.txt` generados desde los datos (D-13)
 - [x] Revisión de alineación y espacios: stats alineadas, ritmo vertical único, chequeo automático de alineación (ver `docs/DESIGN.md`)
 
 ## Datos pendientes del taller (fase 2)
@@ -23,6 +25,7 @@ Todo esto está en `src/data/site.ts`:
 5. **Logo en vector** (SVG o PDF). Hoy hay una insignia provisoria en `src/components/site/Logo.astro`.
 6. **Confirmar qué incluye cada servicio** (`services[].includes`), ver D-07.
 7. **Hasta dónde llega el retiro a domicilio** (`areas`).
+7b. **Confirmar el texto de seguros**: reclamo al seguro del tercero e inspección (D-12).
 8. **¿Tiene garantía el trabajo?** Si sí, va en la tira del hero.
 9. **Dominio** (ver D-04).
 

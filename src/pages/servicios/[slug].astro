@@ -1,11 +1,10 @@
 ---
-import { path } from '../../lib/path';
 import CtaBand from '../../components/site/CtaBand.astro';
 import Section from '../../components/site/Section.astro';
 import SectionHeading from '../../components/site/SectionHeading.astro';
 import ServiceGrid from '../../components/site/ServiceGrid.astro';
 import Steps from '../../components/site/Steps.astro';
-import Button from '../../components/ui/Button.astro';
+import PageHero from '../../components/site/PageHero.astro';
 import Icon from '../../components/ui/Icon.astro';
 import { areas, business, services, type Service } from '../../data/site';
 import Base from '../../layouts/Base.astro';
@@ -18,7 +17,7 @@ interface Props {
   service: Service;
 }
 const { service } = Astro.props;
-const url = new URL(`/servicios/${service.slug}`, Astro.site).toString();
+const url = new URL(`/servicios/${service.slug}/`, Astro.site).toString();
 
 const schema = [
   {
@@ -47,30 +46,13 @@ const schema = [
   whatsappText={service.whatsappText}
   schema={schema}
 >
-  <section aria-labelledby="servicio-title" class="bg-ink text-on-ink">
-    <div class="mx-auto max-w-[1200px] px-4 pb-10 pt-6 md:px-6 md:pb-12 md:pt-8">
-      <nav aria-label="Ruta" class="mb-6 text-sm text-on-ink-2">
-        <ol class="flex flex-wrap items-center gap-1.5">
-          <li><a href={path('/')} class="inline-flex min-h-[32px] items-center underline-offset-4 hover:underline">Inicio</a></li>
-          <li aria-hidden="true">/</li>
-          <li><a href={path('/#servicios')} class="inline-flex min-h-[32px] items-center underline-offset-4 hover:underline">Servicios</a></li>
-          <li aria-hidden="true">/</li>
-          <li><span aria-current="page" class="font-medium text-on-ink">{service.name}</span></li>
-        </ol>
-      </nav>
-      <p class="mb-4 text-sm font-medium uppercase tracking-[0.14em] text-ink-accent">Servicio en {business.address.city}</p>
-      <h1 id="servicio-title" class="display text-[56px] md:text-[80px]">{service.name}</h1>
-      <p class="mt-5 max-w-[60ch] text-lg leading-7 text-on-ink-2">{service.intro}</p>
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row" data-hero-cta>
-        <Button href={business.whatsappHref(service.whatsappText)} external size="lg">
-          <Icon name="message-circle" size={20} />Pedir presupuesto por WhatsApp
-        </Button>
-        <Button href={business.phoneHref} variant="secondary-ink" size="lg">
-          <Icon name="phone" size={20} />Llamar al {business.phoneDisplay}
-        </Button>
-      </div>
-    </div>
-  </section>
+  <PageHero
+    eyebrow={`Servicio en ${business.address.city}`}
+    title={service.name}
+    intro={service.intro}
+    whatsappText={service.whatsappText}
+    crumbs={[{ label: 'Servicios', href: '/#servicios' }]}
+  />
 
   <Section labelledby="incluye-title">
     <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-12">

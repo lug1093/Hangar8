@@ -18,12 +18,15 @@ const year = new Date().getFullYear();
         {
           services.map((s) => (
             <li>
-              <a href={path(`/servicios/${s.slug}`)} class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">
+              <a href={path(`/servicios/${s.slug}/`)} class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">
                 {s.name}
               </a>
             </li>
           ))
         }
+        <li>
+          <a href={path('/seguros/')} class="inline-flex min-h-[32px] items-center hover:text-on-ink hover:underline">Reparación por seguro</a>
+        </li>
       </ul>
     </div>
     <div>

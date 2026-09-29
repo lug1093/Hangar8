@@ -97,3 +97,28 @@ publica en `https://lug1093.github.io/Hangar8/`. Para eso el sitio acepta una ba
 `noindex` (`PUBLIC_PREVIEW`): tiene placeholders y no tiene que competir en Google
 con el dominio real. **Al pasar a Vercel**, borrar el workflow o dejarlo solo para
 ramas.
+
+## D-11. URLs con barra final
+
+Los links iban a `/servicios/sacabollo` y el canonical y el sitemap a
+`/servicios/sacabollo/`. Para Google son dos URLs de la misma página y reparte la
+señal entre las dos. Todo va con barra final (`trailingSlash: 'always'`), que es la
+forma en que Astro genera los archivos (`carpeta/index.html`) y en que los sirven
+Vercel y GitHub Pages sin redirecciones.
+
+## D-12. Página de seguros
+
+"Taller que trabaja con seguros" es una búsqueda con mucha intención y solo tenía
+una sección en la portada. `/seguros/` explica el trámite con información general
+de Argentina (denuncia del siniestro, franquicia, reclamo al seguro del otro auto)
+sin prometer nada que dependa de una póliza puntual. **A confirmar con el taller**:
+que coordina el reclamo al seguro del tercero, y que acompaña la inspección cuando
+la compañía la pide. Si alguna de las dos no es así, se ajusta el texto en
+`insurance` de `src/data/site.ts`.
+
+## D-13. `llms.txt` y `robots.txt` generados
+
+Ya no son archivos fijos en `public/`: se generan en el build desde
+`src/data/site.ts` (`src/pages/llms.txt.ts`, `src/pages/robots.txt.ts`). El
+`llms.txt` fijo repetía teléfono, dirección y servicios a mano, que es exactamente
+como el NAP termina distinto entre la web y lo que leen los asistentes (regla 5).

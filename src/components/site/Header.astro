@@ -5,7 +5,9 @@ import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import Logo from './Logo.astro';
 
-const current = Astro.url.pathname;
+// Ruta actual sin la base, para marcar el ítem del menú con aria-current.
+const current = Astro.url.pathname.slice(import.meta.env.BASE_URL.replace(/\/$/, '').length) || '/';
+const isCurrent = (href: string) => !href.includes('#') && href === current;
 ---
 
 <div class="hidden bg-ink-2 text-on-ink-2 md:block">
@@ -36,7 +38,8 @@ const current = Astro.url.pathname;
             <li>
               <a
                 href={path(item.href)}
-                class="inline-flex min-h-[44px] items-center rounded-[var(--radius-btn)] px-3 text-[15px] text-on-ink-2 transition-colors duration-[120ms] hover:text-on-ink"
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+                class="inline-flex min-h-[44px] items-center rounded-[var(--radius-btn)] px-3 text-[15px] text-on-ink-2 transition-colors duration-[120ms] hover:text-on-ink aria-[current=page]:font-medium aria-[current=page]:text-on-ink aria-[current=page]:underline aria-[current=page]:underline-offset-8"
               >
                 {item.label}
               </a>
@@ -90,7 +93,12 @@ const current = Astro.url.pathname;
       {
         nav.map((item) => (
           <li>
-            <a href={path(item.href)} class="flex min-h-[52px] items-center rounded-[var(--radius-btn)] px-3 text-lg hover:bg-ink-2" data-menu-link>
+            <a
+              href={path(item.href)}
+              aria-current={isCurrent(item.href) ? 'page' : undefined}
+              class="flex min-h-[52px] items-center rounded-[var(--radius-btn)] px-3 text-lg hover:bg-ink-2 aria-[current=page]:font-medium aria-[current=page]:underline aria-[current=page]:underline-offset-8"
+              data-menu-link
+            >
               {item.label}
             </a>
           </li>

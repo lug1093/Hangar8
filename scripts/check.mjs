@@ -9,7 +9,7 @@ import { extname, join, normalize } from 'node:path';
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
 
-const pages = ['/', '/servicios/chapa-y-pintura', '/servicios/sacabollo', '/404'];
+const pages = ['/', '/seguros/', '/servicios/chapa-y-pintura/', '/servicios/sacabollo/', '/servicios/mecanica-integral/', '/servicios/reparaciones/', '/404'];
 const widths = [320, 390, 768, 1024, 1280];
 const schemes = ['light', 'dark'];
 const executablePath = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
