@@ -260,8 +260,13 @@ export const reviews: Review[] = [
 export const googleReviewsHref: string | null = null;
 
 export interface GalleryItem {
-  /** Ruta dentro de /public, o null mientras no haya foto. */
+  /**
+   * Nombre del archivo dentro de src/assets/trabajos/ (por ejemplo
+   * 'gol-antes-despues.jpg'), o null mientras no haya foto. El build la achica y
+   * la convierte a AVIF y WebP sola; si el nombre no existe, el build falla.
+   */
   src: string | null;
+  /** Qué se ve en la foto, para quien no la ve: "Gol blanco con la puerta trasera reparada". */
   alt: string;
   caption: string;
 }
