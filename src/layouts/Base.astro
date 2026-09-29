@@ -79,6 +79,11 @@ const jsonLd = {
     <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     {schema.map((item) => <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...item })} />)}
+    <!-- Vercel Speed Insights -->
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
   </head>
   <body>
     <a
