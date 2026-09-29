@@ -10,8 +10,8 @@
 import { mkdirSync, readFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 import { business, services } from '../src/data/site.ts';
+import { chromiumPath } from './chromium.mjs';
 
-const executablePath = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const font = (p) => `data:font/woff2;base64,${readFileSync(new URL(`../node_modules/${p}`, import.meta.url)).toString('base64')}`;
 const display = font('@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2');
 const sans = font('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2');
@@ -75,7 +75,7 @@ const icon = `<!doctype html><html><head><style>${base}
 </style></head><body>${badge(128)}</body></html>`;
 
 mkdirSync('public/og', { recursive: true });
-const browser = await chromium.launch({ executablePath });
+const browser = await chromium.launch({ executablePath: chromiumPath });
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
 for (const p of pages) {
   await page.setContent(card({ ...p, facts }), { waitUntil: 'load' });

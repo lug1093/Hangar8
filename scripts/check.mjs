@@ -8,17 +8,17 @@ import { join } from 'node:path';
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
 import { serveDist } from './serve.mjs';
+import { chromiumPath } from './chromium.mjs';
 
 const pages = ['/', '/seguros/', '/servicios/chapa-y-pintura/', '/servicios/sacabollo/', '/servicios/mecanica-integral/', '/servicios/reparaciones/', '/404'];
 const widths = [320, 390, 768, 1024, 1280];
 const schemes = ['light', 'dark'];
-const executablePath = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
 const server = await serveDist();
 const { base } = server;
 
 mkdirSync('.checks', { recursive: true });
-const browser = await chromium.launch({ executablePath });
+const browser = await chromium.launch({ executablePath: chromiumPath });
 const problems = [];
 
 try {

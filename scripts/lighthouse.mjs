@@ -7,12 +7,12 @@ import { launch } from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import { serveDist } from './serve.mjs';
+import { chromiumPath } from './chromium.mjs';
 
 const pages = ['/', '/seguros/', '/servicios/chapa-y-pintura/'];
-const chromePath = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
 const server = await serveDist();
-const chrome = await launch({ chromePath, chromeFlags: ['--headless=new', '--no-sandbox'] });
+const chrome = await launch({ chromePath: chromiumPath, chromeFlags: ['--headless=new', '--no-sandbox'] });
 const rows = [];
 try {
   for (const path of pages) {

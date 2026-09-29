@@ -57,7 +57,8 @@ en su tabla final.
 - `npm run check` construye y chequea todo; capturas en `.checks/`.
 - `npm run lighthouse` mide y deja la tabla en `.checks/lighthouse.md` para pegar en `docs/DESIGN.md`.
 - `npm run og` regenera las imágenes para compartir.
-- En este entorno Google y github.io están bloqueados: el mapa se ve vacío en las
+- En una compu local: `npx playwright-core install chromium` una vez; los scripts lo encuentran solos (`scripts/chromium.mjs`).
+- En el entorno remoto Google y github.io están bloqueados: el mapa se ve vacío en las
   capturas (con la dirección como respaldo) y la vista previa no se puede abrir
   desde acá. En un navegador real andan.
 - No usar `astro preview` para medir (D-09): los scripts usan `scripts/serve.mjs`.

@@ -4,6 +4,7 @@ Sitio institucional de Hangar 8, taller integral de chapa y pintura en Ituzaing√
 
 ```bash
 npm install
+npx playwright-core install chromium   # una sola vez, para check, og y lighthouse
 npm run dev      # desarrollo
 npm run build    # sitio est√°tico en dist/
 npm run check    # build + accesibilidad + responsive + capturas en .checks/
