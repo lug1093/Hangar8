@@ -1,7 +1,7 @@
 # Playbook
 
 Lo que aprendimos construyendo **Hold**, **Listas Dharma**, **colegio-torneos**,
-**portfolio**, **giotech-portfolio** y **Kit Offline**, escrito una sola vez para
+**portfolio**, **giotech-portfolio**, **Kit Offline** y **Hangar 8**, escrito una sola vez para
 no volver a discutirlo.
 
 Este documento no es teoría de UX. Cada regla de acá se pagó con un bug, una
@@ -60,6 +60,7 @@ reabrirla cada vez.
 | Tipo de proyecto | Stack | De dónde sale |
 |---|---|---|
 | Sitio institucional o de marketing, con o sin blog | **Astro** + Tailwind v4 + islas React solo donde hay interacción real. Sitemap, rutas por idioma, deploy en Vercel | `portfolio` migró de SPA a Astro y ganó SEO por locale y rutas estáticas reales |
+| Sitio de un comercio local (taller, local, profesional) | **Astro sin React**: el menú es un `<dialog>` y las preguntas frecuentes son `<details>`. La conversión es un link a WhatsApp, sin formularios | `Hangar 8`: 0,6 KB de JS en total y Lighthouse 100 en las cuatro categorías |
 | App de grupo, sin login, estado compartido | **Next.js (App Router)** + Supabase (Postgres + Realtime) + Vercel | `dharma-fc` |
 | App personal, local-first, tiene que andar sin red | **Vite + React + TypeScript strict** + Dexie (IndexedDB) + `vite-plugin-pwa` | `Hold` |
 | Plataforma con panel de gestión y datos relacionales | **Next.js** + Prisma + Postgres (Neon) + shadcn/ui + tokens generados | `colegio-torneos` |
@@ -80,7 +81,11 @@ un toggle propio, `clsx` + `tailwind-merge`.
 - Un framework de formularios pesado en un proyecto con tres formularios.
 - Un segundo set de iconos.
 - Fuentes externas por CDN cuando podés self-hostear con `next/font`.
-- Analytics o telemetría en proyectos personales.
+- Analytics o telemetría en apps personales. **Excepción**: un sitio cuyo trabajo
+  es que lo encuentren (portfolio, institucional) sí mide, porque sin datos no se
+  sabe si llega tráfico orgánico. Ahí va analítica sin cookies (Vercel Web
+  Analytics) y, si hace falta ver comportamiento, Microsoft Clarity cargado solo
+  en producción, con la decisión escrita en `DECISIONS.md`. (`portfolio`)
 
 ### Presupuesto antes que preferencia
 
@@ -251,6 +256,7 @@ un borde, un padding y una tipografía para una fila, falta un componente de dom
 |---|---|
 | Plataforma con panel de gestión (formularios, tablas, diálogos, menús) | shadcn CLI sobre **Base UI**, `lucide-react`, `cva` + `tailwind-merge` |
 | Sitio institucional con poca interacción | shadcn sobre **Base UI**, y solo los componentes que se usan de verdad |
+| Sitio institucional sin interacción (menú y preguntas frecuentes) | **Ninguna.** `<dialog>` y `<details>` nativos, y un `Button` propio con variantes cerradas (`Hangar 8`) |
 | App de una sola pantalla con presupuesto de bundle ajustado | Primitivas propias en `components/ui/` con la misma forma que shadcn, `vaul` si hace falta un drawer. Sin librería de primitivas |
 
 **Base UI, no Radix.** Desde julio de 2026 Base UI es la librería por defecto de
@@ -328,6 +334,12 @@ Escape, foco atrapado mientras está abierta y devuelto al disparador al cerrar.
 
 Entonces la regla precisa no es "usá Radix", es: **una sola implementación de foco en
 todo el proyecto, auditada con axe.** Lo que falla es repetir el patrón por pantalla.
+
+Cuando la única hoja del sitio es un menú, `<dialog>` con `showModal()` ya trae
+todo eso sin escribirlo: es modal para lectores de pantalla, atrapa el foco, cierra
+con Escape y devuelve el foco al botón que lo abrió. Falta solo cerrar al tocar el
+fondo y al elegir un link. El chequeo tiene que probar las dos cosas: axe con el
+menú abierto, y que después de Escape el foco esté otra vez en el botón. (`Hangar 8`)
 
 ### Cuándo un componente se vuelve compartido
 
@@ -416,6 +428,12 @@ base, que hoy está partida: `portfolio` sobre Radix, `colegio-torneos` sobre Ba
   `<button>` (por ejemplo un `next/link` vía render prop).
 - Tailwind: un `--font-sans` autorreferencial hace que toda la app caiga al serif por
   defecto del navegador, sin ningún error de build.
+- Tailwind: `class="hidden sm:inline-flex"` sobre un componente cuya clase base ya
+  trae `inline-flex` **no oculta nada**: las dos utilidades tienen la misma
+  especificidad y gana la que Tailwind escribe después en el CSS. En `Hangar 8` el
+  botón del header se veía en el celular y desbordaba a 320px. El display
+  responsive va en un contenedor, o se fusiona con `tailwind-merge`. Es la misma
+  causa raíz que la de la cascada de `portfolio` (sección 6).
 
 ### Qué se construye a mano igual
 
@@ -456,7 +474,8 @@ evita que dos lugares se desincronicen, no la que junta código parecido.
 - [ ] Las variantes de cada primitiva son un set cerrado y viven en un solo archivo
 - [ ] Ningún componente de dominio duplicado entre el panel y la parte pública
 - [ ] `package.json` sin dependencias de UI que no se importen
-- [ ] El stack declarado en `CLAUDE.md` es el que está instalado\n- [ ] Ninguna primitiva editada fue pisada por un `add` sin `--dry-run --diff`
+- [ ] El stack declarado en `CLAUDE.md` es el que está instalado
+- [ ] Ninguna primitiva editada fue pisada por un `add` sin `--dry-run --diff`
 
 ---
 
@@ -482,10 +501,44 @@ evita que dos lugares se desincronicen, no la que junta código parecido.
 - **Navegación mobile**: si los links de la barra desaparecen abajo de `md` sin
   alternativa, la navegación está rota. Sheet con hamburguesa en mobile, desktop
   intacto. Lo mismo con una sidebar de admin de ancho fijo.
+- **Un solo ancho de contenido y un solo margen lateral**, como tokens
+  (`--container`, `--gutter`), para header, hero, secciones y footer. En
+  `portfolio` el header y el hero medían 1120px y las secciones 1040px, con
+  márgenes de 24 o 20px: la marca, el título del hero y los títulos de sección
+  caían en tres bordes izquierdos distintos (160, 184 y 200px a 1440). Ningún
+  chequeo automático lo marca; se ve midiendo el `left` de cada bloque.
 - `scroll-margin-top` en los destinos de anclas cuando hay header fijo. Y si el sitio
   tiene más de una página, los links de sección tienen que apuntar a `/#seccion`, no
   solo hacer scroll suave (desde el blog no hacían nada).
 - La acción principal de cada pantalla, en el tercio inferior, al alcance del pulgar.
+- **Barra fija con la acción principal en el teléfono, sin romper "un solo bloque
+  sólido".** Si el hero ya tiene el botón, la barra fija de abajo aparece recién
+  cuando ese botón sale de la pantalla (`IntersectionObserver` sobre el bloque de
+  botones). Si no, en la primera pantalla hay dos rojos iguales. (`Hangar 8`)
+- **Un solo ritmo vertical**, en la escala de 4px: el padding de sección, el del
+  hero y el espacio título-contenido se definen una vez (componente `Section`) y no
+  por sección. Cuando un título va en una columna al lado de su contenido, pierde su
+  margen inferior: el espacio lo da el `gap`. Si no, se suman los dos y sobra aire.
+  (`Hangar 8`: se bajó de 96 y 80px a 48 y 64px después de verlo en el teléfono)
+
+### Alineación en grillas
+
+- **En una grilla de números, el número va primero en el documento.** En `Hangar 8`
+  las estadísticas usaban `flex-col-reverse` para mostrar el número arriba de su
+  etiqueta: el número quedaba al final y su altura dependía de si la etiqueta
+  ocupaba una línea o dos. Con `order-first` (o el orden natural) todos arrancan a
+  la misma altura. Lo vio el usuario en un celular acostado, a ~1000px.
+- **Se mide, no se mira.** Cada grilla lleva `data-align-group` y, en cada celda,
+  una marca `data-align="top"` o `"bottom"` en lo que tiene que quedar alineado
+  (el número, el título, el link de abajo). El chequeo compara las marcas de las
+  celdas de una misma fila, con 1px de tolerancia, en todos los anchos. **Incluí un
+  ancho intermedio (1024)**: ahí aparecen las grillas de 4 columnas con títulos que
+  pasan a dos líneas, y ni 390 ni 1280 lo muestran.
+- Un título que en un ancho ocupa dos líneas y en el de al lado una desfasa todo lo
+  que sigue. Se resuelve acortando el título o pasando a menos columnas, no con
+  alturas fijas.
+- `text-wrap: balance` en los títulos grandes: evita la palabra sola en la última
+  línea ("TRES PASOS Y TU AUTO ESTÁ / LISTO").
 
 ### La cascada de CSS
 
@@ -549,6 +602,14 @@ adónde va un elemento, no va.
 - **Honestidad en el copy institucional**: no sobreafirmar resultados, y no nombrar
   clientes ni productos de terceros sin permiso. Una métrica muy específica apunta al
   cliente tanto como el nombre.
+- **Los datos de confianza que todavía no existen van como placeholder visible, nunca
+  inventados.** Reseñas, cantidad de clientes, años, puntaje de Google: cada uno
+  lleva `placeholder: true` en los datos, se ve con una marca "Ejemplo" y un flag
+  (`SHOW_PLACEHOLDERS`) apaga de una vez todos los bloques que dependen de uno. Así
+  se puede mostrar el diseño completo al cliente sin que un número falso llegue a
+  publicarse, y si falta el dato, la sección se saca en vez de quedar vacía. Logos
+  de terceros (aseguradoras, marcas) solo con permiso de cada uno; si no, el
+  nombre. (`Hangar 8`)
 
 ---
 
@@ -638,7 +699,7 @@ Proporcionalidad primero: **el nivel de pruebas depende de quién usa la app.**
 |---|---|
 | Proyecto personal, un usuario | Solo lógica de dominio (Vitest). Sin tests de UI ni E2E |
 | App que usa un grupo de gente | Casos de uso de punta a punta, bordes, carreras, pantallas |
-| Sitio institucional | Build sin errores, recorrido visual a mano, axe, Lighthouse |
+| Sitio institucional | Build sin errores, recorrido visual a mano, axe, Lighthouse, alineación de grillas medida, imagen para compartir en cada página |
 
 ### El método que funcionó (Dharma, 212 comprobaciones)
 
@@ -673,7 +734,23 @@ Seis archivos, cada uno con una pregunta distinta:
    mediciones, Lighthouse incluido, salieron contra un build anterior**: mostraban
    bugs ya corregidos y escondían un 404 recién introducido. La forma de no volver a
    comérselo no es acordarse de bajar el servidor: es que **el runner levante el
-   suyo, en un puerto libre, y lo baje al terminar**.
+   suyo, en un puerto libre, y lo baje al terminar**. Ojo con los servidores de
+   preview que se vuelven demonios: `astro preview` en Astro 7 queda corriendo en
+   segundo plano, y matar el proceso que lo lanzó no lo baja. La segunda corrida
+   encontró el servidor viejo y habría medido el build anterior. En `Hangar 8` el
+   runner sirve `dist/` con un servidor propio de 40 líneas (`node:http`), que además
+   comprime y cachea como Vercel para que Lighthouse no penalice lo que en producción
+   no pasa.
+
+**El chequeo corre en CI y es la condición para publicar.** En `Hangar 8` el job
+`check` (axe, desborde, áreas táctiles, alineación, imagen para compartir) tiene que
+pasar antes de que se publique la vista previa, y si falla sube las capturas como
+artefacto. Es la red para cuando alguien carga una foto o un texto largo.
+
+**Qué Chromium usan los scripts**: `CHROMIUM_PATH` si está (CI), el preinstalado del
+entorno remoto si existe, y si no el de `playwright-core` (`npx playwright-core
+install chromium` en una compu local). Con la ruta del entorno remoto fija, los
+scripts no corren en ningún otro lado. (`Hangar 8`, `scripts/chromium.mjs`)
 
 En el entorno remoto, Chromium ya está instalado y Playwright configurado: no correr
 `playwright install`.
@@ -696,10 +773,73 @@ referencia de qué se mide:
 Cuando un número queda apenas afuera, se escribe por qué y cuál es el candidato a
 recortar. Eso vale más que esconderlo.
 
+**Las fuentes son la causa más común de CLS en un sitio sin imágenes.** En
+`Hangar 8` la primera medición dio 0,071: el texto aparecía con la fuente del
+sistema y saltaba al llegar la definitiva. Precargar solo los archivos que usa la
+primera pantalla (el subset latin de cada familia, importados con `?url` para que
+tengan el mismo hash que usa el CSS) lo llevó a 0. Si el CSS entero pesa pocos KB
+(6,5 gzip), va adentro del HTML (`inlineStylesheets: 'always'`) y la primera
+pantalla no espera otro pedido. Y sacar los pesos que ningún componente usa.
+
 Además: dimensiones explícitas en las imágenes (evita el salto de layout), fuentes
 self-hosted, y nada de marquesinas auto-scrolleadas (duplican el DOM y sacan
 elementos del foco: en `portfolio` se reemplazó por una grilla responsive de 7/4/3/2
 columnas).
+
+### Que te encuentren: buscadores y asistentes de IA
+
+Para un sitio institucional o con blog, el rendimiento también es que aparezca. Lo
+que aplica a Google aplica a ChatGPT, Perplexity, Claude y Copilot, que citan desde
+índices de búsqueda (Bing en el caso de ChatGPT y Copilot) y leen el HTML servido.
+(`portfolio`, auditoría de 2026-09)
+
+- **Título y descripción propios en cada página.** El layout acepta `title` y
+  `description` por prop. En `portfolio` todos los artículos del blog salían con el
+  título y la descripción de la portada: para un buscador eran duplicados.
+- **Datos estructurados como un grafo**: `Person` y `WebSite` con `@id` estable, y
+  cada artículo como `BlogPosting` con `author` apuntando a ese `@id`, más
+  `datePublished`, `dateModified`, `inLanguage` y `BreadcrumbList`. Ese enlace es
+  lo que permite atribuir el artículo a la misma persona del portfolio.
+- **Autor visible y fechas con `<time datetime>`** en el artículo, no solo en el
+  JSON-LD.
+- **`llms.txt`** en la raíz (llmstxt.org), generado desde el mismo contenido que
+  las páginas para que no se desincronice: qué es el sitio y la lista de artículos
+  con su descripción.
+- **Sitemap, canonical y links internos con la misma URL exacta.** Elegí barra
+  final o no (`trailingSlash`) y que los tres coincidan; con hreflang en el sitemap
+  si hay dos idiomas. Un hreflang solo si la traducción existe.
+- **Contenido estático en el HTML.** Astro ya lo da: los asistentes de IA casi no
+  ejecutan JavaScript.
+- Lo que no se resuelve con código: dar de alta el sitio en Google Search Console
+  y en Bing Webmaster Tools, y mandar el sitemap en los dos.
+
+**Si es un comercio local** (taller, local a la calle, profesional), además
+(`Hangar 8`):
+
+- **Una página por servicio y una por cada búsqueda con intención propia.** En un
+  taller de chapa y pintura, "trabaja con seguros" es una búsqueda en sí misma y no
+  alcanza con una sección en la portada: va `/seguros/`, con el trámite explicado.
+- **JSON-LD del tipo de negocio concreto** (`AutoBodyShop`, `Dentist`,
+  `Restaurant`, no `LocalBusiness` genérico) con dirección, teléfono, horario,
+  `areaServed` con los barrios y `sameAs` a las redes; `Service` en cada página de
+  servicio apuntando al `@id` del negocio, y `FAQPage` donde haya preguntas.
+- **Nombre, dirección y teléfono idénticos en todos lados**: web, JSON-LD,
+  `llms.txt`, Google Business, Instagram. Por eso `llms.txt` y `robots.txt` se
+  generan desde el mismo archivo de datos que las páginas: un `llms.txt` escrito a
+  mano es la forma segura de que el teléfono termine distinto.
+- **El perfil de Google Business pesa más que cualquier cosa del sitio** para salir
+  en el mapa. Va en la guía de publicación, no se da por hecho.
+- **Imagen para compartir en cada página**, generada con las tipografías y los datos
+  del sitio (Chromium sobre una plantilla HTML) y commiteada. Un sitio que se
+  comparte por WhatsApp sin `og:image` se ve como un link cualquiera. El chequeo
+  verifica que la imagen de cada página exista.
+
+**Vistas previas**: `noindex` en la página y `robots.txt` que **deja rastrear**. Un
+`Disallow` le impide a Google leer el `noindex` y puede indexar la URL igual, sin
+contenido. Si la vista previa vive en una subcarpeta (GitHub Pages sirve en
+`/<repo>/`), todo link interno pasa por un helper `path()` con la base, y el build
+de la vista previa usa su propia URL como `site` para que canonical y `og:image`
+apunten a algo que existe. (`Hangar 8`)
 
 ---
 
@@ -729,7 +869,11 @@ No proponer estas cosas. Ya se evaluaron y se descartaron con motivo.
 | Google Sheets como interfaz | Fricción alta en el teléfono, media población no lo abre |
 | Otra app que haya que instalar | Nadie se baja otra app. Link fijado en el grupo |
 | Spinners y skeletons con datos locales | Si hace falta un spinner, el problema es de rendimiento |
-| Analytics y telemetría en proyectos personales | No aportan nada y agregan peso y superficie |
+| Analytics y telemetría en apps personales | No aportan nada y agregan peso y superficie. No aplica a un sitio que existe para ser encontrado (ver sección 2) |
+| Inventar reseñas, métricas o logos para que el diseño "se vea completo" | Si llega a publicarse, el sitio pierde lo único que vende, la confianza. Placeholder visible y apagable (sección 8) |
+| Widget de reseñas de Google embebido | Pesado, de terceros, rompe el diseño y el rendimiento. Reseñas copiadas con permiso y un link al perfil |
+| Medir contra `astro preview` (o cualquier preview que quede corriendo) | En Astro 7 queda como demonio y la siguiente corrida mide el build anterior. Servidor propio en el runner |
+| `hidden` sobre un componente que ya trae `inline-flex` | Empata en especificidad y pierde por orden: no oculta. Display responsive en un contenedor |
 
 ---
 
@@ -821,10 +965,20 @@ Lo que efectivamente baja el consumo y las idas y vueltas:
 7. **Cerrá cada sesión actualizando `PROGRESS.md`**, incluso si quedó a la mitad.
 8. **Tareas verificables.** "Que la tabla no se corte a 320px" se comprueba; "mejorá
    el diseño" no, y termina en tres rondas de opiniones.
-9. **Instalá las skills del stack al arrancar el proyecto**, no en la sesión veinte.
-   Una skill es contexto que la sesión no tiene que reconstruir leyendo el repo. Hoy
-   aplican la de shadcn (ver sección 5) y las de Prisma donde haya Prisma. Se
-   commitea `skills-lock.json`.
+9. **"Copiá lo que funciona" se escribe como tabla**, no como inspiración. Cuando el
+   pedido es tomar el formato de sitios exitosos, `DECISIONS.md` lleva una tabla
+   patrón → por qué funciona → cómo quedó acá, y qué se dejó afuera a propósito. Así
+   el diseño no se rediscute por gusto. (`Hangar 8`, D-01, sobre las cadenas de
+   chapa y pintura de EE.UU.)
+10. **Lo que depende del cliente se pide por escrito y una sola vez.** Un
+    `docs/PARA_EL_CLIENTE.md` con el mensaje listo para mandar, cómo sacar las fotos
+    y dónde va cada dato en el código, y un `docs/PUBLICAR.md` con dominio, deploy y
+    perfiles. Sin eso, cada dato llega por un canal distinto y la fase 2 no arranca.
+    (`Hangar 8`)
+11. **Instalá las skills del stack al arrancar el proyecto**, no en la sesión veinte.
+    Una skill es contexto que la sesión no tiene que reconstruir leyendo el repo. Hoy
+    aplican la de shadcn (ver sección 5) y las de Prisma donde haya Prisma. Se
+    commitea `skills-lock.json`.
 
 ---
 
@@ -854,6 +1008,11 @@ Antes de dar algo por terminado:
 - [ ] Bundle dentro del presupuesto
 - [ ] Lighthouse Performance y Accesibilidad
 - [ ] Typecheck y build de producción limpios
+- [ ] Sitio público: título y descripción propios por página, JSON-LD válido,
+      sitemap y canonical con la misma URL
+- [ ] Sitio público: imagen para compartir en cada página, que exista
+- [ ] Alineación medida en cada fila de las grillas, en 320, 390, 768, 1024 y 1280
+- [ ] Ningún dato de confianza inventado: todo placeholder se ve como tal o está apagado
 
 **Documentado**
 - [ ] `PROGRESS.md` al día
@@ -871,5 +1030,6 @@ Si una regla parece arbitraria, el contexto completo está en estos archivos.
 | `Hold` | `CLAUDE.md` (sistema visual y doctrina de producto), `REQUIREMENTS.md` (modelo de dominio y no funcionales), `DECISIONS.md` (las diez decisiones autónomas), `docs/PROMPT_CLAUDE_CODE.md` |
 | `dharma-fc` | `docs/DESIGN.md` (tokens y contrastes medidos), `docs/SPEC.md` (casos de uso), `docs/BACKLOG.md` (orden de construcción), `pruebas/README.md` (el método de pruebas) |
 | `colegio-torneos` | Los mensajes de commit: la adopción de M3, la regresión de radios, el rediseño de filas de partido, la convención de ganó/empató/perdió |
-| `portfolio` | Los mensajes de commit: la auditoría de cascada, los cuatro bugs de mobile, la pasada de densidad y accesibilidad |
+| `portfolio` | Los mensajes de commit: la auditoría de cascada, los cuatro bugs de mobile, la pasada de densidad y accesibilidad, la auditoría de alineación y SEO. `DECISIONS.md`: por qué mide visitas |
 | `QR-code` | El README: cómo se explica un producto por su arquitectura ("cortá internet y probá") en vez de por una promesa |
+| `Hangar8` | `DECISIONS.md` (D-01 el benchmark de EE.UU., D-06 placeholders, D-09 el preview demonio, D-15 fuentes y CLS), `docs/DESIGN.md` (ritmo vertical, alineación, rendimiento medido), `scripts/check.mjs` (el chequeo de alineación), `docs/PARA_EL_TALLER.md` |
